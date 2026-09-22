@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 500" role="img" aria-labelledby="title desc">
-<title id="title">Capacidad liberada</title><desc id="desc">Líneas dispersas convergen en un núcleo dorado y continúan ordenadas.</desc>
-<defs><radialGradient id="g" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#fff5c9"/><stop offset=".42" stop-color="#d7c383"/><stop offset="1" stop-color="#a98f45"/></radialGradient></defs>
-<g fill="none" stroke="#8b8c88" stroke-width="1.5" opacity=".62">
-<path id="a" d="M20 64L150 82 258 126 350 214 430 250"/><path id="b" d="M28 120L156 128 270 154 356 220 430 250"/><path d="M12 180L140 174 262 190 352 226 430 250"/><path id="c" d="M24 238L154 232 270 230 356 238 430 250"/><path d="M16 300L146 292 260 276 354 260 430 250"/><path d="M34 360L164 342 272 310 358 274 430 250"/><path id="d" d="M18 430L142 400 252 350 352 286 430 250"/>
+<title id="title">Capacidad liberada</title><desc id="desc">Líneas discretas y dispersas convergen en un núcleo dorado y continúan ordenadas.</desc>
+<defs><radialGradient id="g" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#eee7cf"/><stop offset=".48" stop-color="#c8b98a"/><stop offset="1" stop-color="#aa9965"/></radialGradient></defs>
+<g fill="none" stroke="#686b6b" stroke-width="1" opacity=".28">
+<path id="a" d="M70 92L174 108 270 144 354 216 430 250"/><path d="M86 144L184 150 278 174 360 222 430 250"/><path d="M58 198L166 194 270 206 356 230 430 250"/><path id="c" d="M78 246L180 242 280 240 360 242 430 250"/><path d="M64 300L172 292 270 278 358 262 430 250"/><path d="M90 350L190 334 282 306 362 274 430 250"/><path id="d" d="M72 406L170 382 264 344 356 284 430 250"/>
 </g>
-<g fill="none" stroke="#8b8c88" stroke-width="1.5" opacity=".72"><path id="e" d="M430 226H742"/><path d="M430 238H742"/><path id="f" d="M430 250H742"/><path d="M430 262H742"/><path d="M430 274H742"/></g>
-<g fill="#d6d5d0"><circle cx="150" cy="82" r="4"/><circle cx="270" cy="154" r="5"/><circle cx="140" cy="174" r="3"/><circle cx="260" cy="276" r="4"/><circle cx="164" cy="342" r="3"/></g>
-<circle cx="430" cy="250" r="31" fill="#c8b98a" opacity=".10"><animate attributeName="r" values="29;34;29" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".07;.15;.07" dur="5s" repeatCount="indefinite"/></circle><circle cx="430" cy="250" r="18" fill="url(#g)"/>
-<g fill="#f7f4ee"><circle r="4"><animateMotion dur="5.8s" repeatCount="indefinite"><mpath href="#a"/></animateMotion></circle><circle r="3"><animateMotion dur="6.6s" begin="1.4s" repeatCount="indefinite"><mpath href="#c"/></animateMotion></circle><circle r="4"><animateMotion dur="7.2s" begin="2.8s" repeatCount="indefinite"><mpath href="#d"/></animateMotion></circle></g>
-<g fill="#c8b98a"><circle r="3"><animateMotion dur="4.8s" begin="1.1s" repeatCount="indefinite"><mpath href="#e"/></animateMotion></circle><circle r="3"><animateMotion dur="5.4s" begin="3.2s" repeatCount="indefinite"><mpath href="#f"/></animateMotion></circle></g>
+<g fill="none" stroke="#686b6b" stroke-width="1" opacity=".36"><path id="e" d="M430 230H690"/><path d="M430 240H690"/><path id="f" d="M430 250H690"/><path d="M430 260H690"/><path d="M430 270H690"/></g>
+<g fill="#686b6b" opacity=".42"><circle cx="174" cy="108" r="2.5"/><circle cx="278" cy="174" r="3"/><circle cx="166" cy="194" r="2"/><circle cx="270" cy="278" r="2.5"/><circle cx="190" cy="334" r="2"/></g>
+<circle cx="430" cy="250" r="27" fill="#c8b98a" opacity=".06"><animate attributeName="r" values="26;30;26" dur="6.5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".04;.09;.04" dur="6.5s" repeatCount="indefinite"/></circle><circle cx="430" cy="250" r="13" fill="url(#g)"/>
+<g fill="#686b6b" opacity=".62"><circle r="2.5"><animateMotion dur="7.8s" repeatCount="indefinite"><mpath href="#a"/></animateMotion></circle><circle r="2"><animateMotion dur="8.8s" begin="2.1s" repeatCount="indefinite"><mpath href="#c"/></animateMotion></circle><circle r="2.5"><animateMotion dur="9.6s" begin="4.2s" repeatCount="indefinite"><mpath href="#d"/></animateMotion></circle></g>
+<g fill="#686b6b" opacity=".48"><circle r="2"><animateMotion dur="7.4s" begin="1.8s" repeatCount="indefinite"><mpath href="#e"/></animateMotion></circle><circle r="2"><animateMotion dur="8.2s" begin="4.6s" repeatCount="indefinite"><mpath href="#f"/></animateMotion></circle></g>
 <style>@media(prefers-reduced-motion:reduce){animate,animateMotion{display:none}}</style>
 </svg>
