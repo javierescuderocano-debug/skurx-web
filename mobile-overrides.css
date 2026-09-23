@@ -8,4 +8,50 @@
   }
   .brand-lockup strong,.header-contact{color:var(--ivory)}
   .brand-lockup span{color:var(--gold)}
+
+  .hero{
+    width:100%;
+    background:#4a4946;
+    padding:0;
+  }
+  .hero-prototype{
+    gap:0;
+    padding-top:0;
+  }
+  .hero-message{
+    width:100%;
+    max-width:none;
+    padding:58px 20px 0;
+    background:var(--ivory);
+    color:var(--coal);
+  }
+  .hero-message h1{color:var(--coal)}
+  .hero-lead{color:var(--muted)}
+  .hero-principle{
+    max-width:none;
+    margin:0;
+    padding:0 0 34px;
+    color:var(--coal);
+  }
+  .hero-principle:after{
+    left:0;
+    bottom:0;
+    width:100%;
+    background:var(--gold);
+  }
+  .hero-visual{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:38px 20px 48px;
+    background:#4a4946;
+    border-top:0;
+    transform:none;
+  }
+  .hero-visual img{
+    width:118%;
+    max-width:590px;
+    margin:0 auto;
+    transform:translateX(-7%);
+  }
 }
