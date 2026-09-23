@@ -1,0 +1,11 @@
+@media(max-width:800px){
+  .site-header{
+    width:100%;
+    padding:0 20px;
+    background:#4a4946;
+    color:var(--ivory);
+    border-bottom-color:rgba(242,239,233,.18);
+  }
+  .brand-lockup strong,.header-contact{color:var(--ivory)}
+  .brand-lockup span{color:var(--gold)}
+}
