@@ -48,17 +48,20 @@
   }
   .hero:after{
     content:"HABLEMOS";
-    display:block;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
     box-sizing:border-box;
     width:100%;
-    min-height:96px;
-    padding:26px 20px calc(30px + env(safe-area-inset-bottom,0px));
+    min-height:132px;
+    padding:18px 20px calc(54px + env(safe-area-inset-bottom,0px));
     background:#4a4946;
     color:var(--ivory);
     text-align:center;
     font-size:13px;
     font-weight:700;
     letter-spacing:.12em;
+    line-height:1.2;
     text-decoration:underline;
     text-decoration-color:var(--gold);
     text-decoration-thickness:2px;
