@@ -1,27 +1,42 @@
 @media(max-width:800px){
+  body{background:var(--ivory)}
   .site-header{
     width:100%;
-    padding:0 20px;
+    min-height:154px;
+    padding:26px 20px 24px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     background:#4a4946;
     color:var(--ivory);
-    border-bottom-color:rgba(242,239,233,.18);
+    border-bottom:0;
   }
-  .brand-lockup strong,.header-contact{color:var(--ivory)}
-  .brand-lockup span{color:var(--gold)}
+  .brand-lockup{
+    margin:0 auto;
+    align-items:center;
+    text-align:center;
+  }
+  .brand-lockup strong{color:var(--ivory);font-size:16px}
+  .brand-lockup span{color:var(--gold);font-size:9.5px;transform:none}
+  .header-contact{display:none}
 
   .hero{
     width:100%;
-    background:#4a4946;
+    min-height:auto;
+    margin:0;
     padding:0;
+    background:var(--ivory);
+    color:var(--coal);
   }
   .hero-prototype{
+    grid-template-columns:1fr;
     gap:0;
     padding-top:0;
   }
   .hero-message{
     width:100%;
     max-width:none;
-    padding:58px 20px 0;
+    padding:54px 20px 0;
     background:var(--ivory);
     color:var(--coal);
   }
@@ -30,7 +45,7 @@
   .hero-principle{
     max-width:none;
     margin:0;
-    padding:0 0 34px;
+    padding:0 0 30px;
     color:var(--coal);
   }
   .hero-principle:after{
@@ -43,8 +58,8 @@
     width:100%;
     max-width:none;
     margin:0;
-    padding:38px 20px 48px;
-    background:#4a4946;
+    padding:34px 20px 48px;
+    background:var(--ivory);
     border-top:0;
     transform:none;
   }
@@ -53,5 +68,21 @@
     max-width:590px;
     margin:0 auto;
     transform:translateX(-7%);
+  }
+  .hero:after{
+    content:"HABLEMOS";
+    display:block;
+    width:100%;
+    padding:30px 20px 32px;
+    background:#4a4946;
+    color:var(--ivory);
+    text-align:center;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-decoration:underline;
+    text-decoration-color:var(--gold);
+    text-decoration-thickness:2px;
+    text-underline-offset:8px;
   }
 }
