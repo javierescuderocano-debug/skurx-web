@@ -32,7 +32,7 @@
     margin:0;
     padding:0 20px 4px;
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:center;
     overflow:hidden;
     background:var(--ivory);
@@ -43,8 +43,8 @@
     display:block;
     width:108%;
     max-width:540px;
-    margin:-42px auto 0;
-    transform:translateX(-4%);
+    margin:0 auto;
+    transform:translate(-4%,-4px);
   }
   .hero:after{
     content:"HABLEMOS";
