@@ -7,7 +7,9 @@
     enabled: false,
     // Clave gratuita de https://web3forms.com (asociada a info@skurx.es). Vacía = modo prueba, no se envía nada.
     web3formsKey: '',
-    storageKey: 'skurx-fini-v1'
+    storageKey: 'skurx-fini-v1',
+    // La conversación se guarda en el navegador del usuario para que pueda retomarla otro día.
+    keepDays: 30
   };
 
   var panel = document.getElementById('panel-contacto');
@@ -30,10 +32,24 @@
     return { step: 'inicio', data: {}, history: [], asked: {}, topic: null };
   }
   function save() {
-    try { sessionStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); } catch (e) {}
+    state.savedAt = Date.now();
+    try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); } catch (e) {}
   }
   function load() {
-    try { return JSON.parse(sessionStorage.getItem(CONFIG.storageKey)); } catch (e) { return null; }
+    try {
+      var saved = JSON.parse(localStorage.getItem(CONFIG.storageKey));
+      if (saved && Date.now() - (saved.savedAt || 0) < CONFIG.keepDays * 864e5) return saved;
+      localStorage.removeItem(CONFIG.storageKey);
+    } catch (e) {}
+    return null;
+  }
+  // ¿Es la primera vez que se abre el panel en esta visita? Sirve para dar la bienvenida de vuelta.
+  function isReturnVisit() {
+    try {
+      if (sessionStorage.getItem(CONFIG.storageKey + '-visit')) return false;
+      sessionStorage.setItem(CONFIG.storageKey + '-visit', '1');
+    } catch (e) {}
+    return true;
   }
 
   // ---------- Textos ----------
@@ -150,8 +166,8 @@
       var dots = showTyping();
       await wait(typingTime(msg.text + (msg.list ? msg.list.join(' ') : '')));
       dots.remove();
+      if (/\?/.test(msg.text)) state.lastQ = msg.text;
       push(msg);
-      if (/\?$/.test(msg.text)) state.lastQ = msg.text;
       if (i < texts.length - 1) await wait(350);
     }
     busy = false;
@@ -492,6 +508,31 @@
     submit(text);
   });
 
+  // Al volver otro día, Fini saluda y retoma la conversación donde se quedó.
+  async function welcomeBack() {
+    var quickBefore = (state.quick || []).filter(function (q) { return q !== 'Empezar de nuevo'; });
+    var name = state.data.nombre ? ', ' + state.data.nombre : '';
+    processing = true;
+    if (state.step === 'fin') {
+      await say(['Hola de nuevo' + name + '. Ya tenemos tu caso y el equipo se pondrá en contacto contigo.', 'Si quieres contarme algo distinto, podemos empezar una conversación nueva.']);
+      setQuick(['Empezar de nuevo']);
+    } else if (state.step === 'inicio') {
+      setQuick(quickBefore);
+    } else {
+      if (state.step === 'enviando') state.step = 'confirmar';
+      await say(['Hola de nuevo' + name + '. Seguimos donde lo dejamos.'].concat(state.lastQ ? [state.lastQ] : []));
+      setQuick(quickBefore.concat(['Empezar de nuevo']));
+    }
+    processing = false;
+    if (pending.length) {
+      var t = pending.join('\n');
+      pending = [];
+      processing = true;
+      await handle(t);
+      processing = false;
+    }
+  }
+
   // ---------- Apertura y cierre del panel ----------
   var trigger = null;
   var scrollY = 0;
@@ -505,8 +546,10 @@
     if (!log.childElementCount) {
       if (state.history.length) {
         state.history.forEach(render);
-        setQuick(state.quick || []);
+        if (isReturnVisit()) welcomeBack();
+        else setQuick(state.quick || []);
       } else {
+        isReturnVisit();
         start();
       }
     }
