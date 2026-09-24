@@ -89,7 +89,7 @@
   };
 
   var ACKS = ['Entiendo.', 'Tiene sentido.', 'Vale, me hago una idea.', 'Gracias, eso me ayuda mucho.'];
-  var TOOLS = /excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
+  var TOOLS = /\bcorreo\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
 
   var QUESTIONS = {
     problema: 'Cuéntame, ¿qué es lo que más tiempo os quita ahora mismo?',
@@ -223,6 +223,45 @@
     }
   ];
 
+
+  // ---------- ¿La respuesta encaja con la pregunta? ----------
+  var WORK = /empresa|negocio|trabaj|equipo|client|tarea|gesti[oó]n|proceso|tiempo|hora|semana|\bmes\b|hacemos|tenemos|llevamos|usamos|pedido|venta|compra|proveedor|emplead|oficina|tienda|servicio|proyecto|correo|excel|papel|programa|\bapp\b|\bweb\b|dato|document|factur|llamad|mensaje|reuni|informe|agenda|cita|stock|almac|contab|presupuest|seguimiento|pendiente|repet|manual|a mano|copi|organiz|coordin|turno|reserva/i;
+
+  var FITS = {
+    problema: function (t) { return WORK.test(t) || !!topicOf(t); },
+    detalle: function (t) { return WORK.test(t) || !!topicOf(t) || /\d|cada|siempre|todos los|a veces|\byo\b|nosotros|nadie|encarg|diari|semanal/i.test(t); },
+    herramientas: function (t) { TOOLS.lastIndex = 0; return TOOLS.test(t) || /programa|aplicaci|\bapp\b|software|papel|libreta|agenda|nada|ninguna|a mano|correo|mail|m[oó]vil|ordenador|crm|erp|\bweb\b|herramient|sistema|hoja|tablet|plataforma/i.test(t); },
+    tiempo: function (t) { return /\d|hora|minut|d[ií]a|semana|\bmes|mucho|poco|bastante|rato|jornada|nada|medio|media|ni idea|no s[eé]|depende|un par|varias|much[ií]simo/i.test(t); },
+    empresa: function (t) { return WORK.test(t) || /\d|somos|sector|dedica|aut[oó]nom|freelance|pyme|tienda|restaurante|\bbar\b|cl[ií]nica|despacho|taller|agencia|consultor|distribu|fabric|constru|inmobiliari|hotel|academia|asesor|comercio|e-?commerce|log[ií]stic|transporte|abogad|dental|gimnasio|peluquer|estudio|colegio|\bong\b|asociaci/i.test(t); }
+  };
+
+  var CLARIFY = {
+    problema: 'Creo que no te he entendido del todo. ¿Me cuentas qué parte del trabajo diario os quita más tiempo? Por ejemplo, responder a clientes, hacer facturas o pasar datos de un sitio a otro.',
+    detalle: 'Perdona, no sé si te he seguido. Me refería a cómo es ese trabajo en el día a día: cada cuánto ocurre, quién lo hace o cómo lo hacéis ahora.',
+    herramientas: 'Perdona, creo que no me he explicado bien. Me refería a los programas o aplicaciones que usáis: Excel, el correo, algún programa de gestión… Aunque sea papel, también me sirve.',
+    tiempo: 'No hace falta que sea exacto. ¿Diríais que son unas pocas horas a la semana, o más bien varias horas al día?',
+    empresa: 'Perdona, no te he entendido bien. ¿A qué se dedica tu empresa, y cuántas personas sois más o menos?'
+  };
+
+  function topicOf(text) {
+    var found = null;
+    // Orden de prioridad: lo más concreto primero («las facturas llegan por correo» es administración).
+    ['administracion', 'seguimiento', 'informacion', 'atencion'].some(function (k) {
+      if (TOPICS[k].re.test(text)) { found = k; return true; }
+      return false;
+    });
+    return found;
+  }
+
+  // «Hola, me llamo Javier» / «soy Javier»: devuelve el nombre y el resto del mensaje.
+  var NOT_A_NAME = /^(el|la|los|las|un|una|de|del|muy|nuevo|nueva|aut[oó]nom|gerente|due[nñ]|propietari|responsable|jefe|jefa|director|administrador|encargad|socio|socia|comercial|t[eé]cnic|de)$/i;
+  function introduction(text) {
+    var m = text.match(/(?:me llamo|mi nombre es|^(?:hola[,.!]?\s*)?soy)\s+([a-záéíóúüñ]+)/i);
+    if (!m || NOT_A_NAME.test(m[1]) || m[1].length < 2) return null;
+    var rest = text.slice(m.index + m[0].length).replace(/^[\s,.;:!y]+/i, '');
+    return { name: capitalize(m[1]), rest: rest };
+  }
+
   // ---------- Conversación ----------
   async function handle(text) {
     var step = state.step;
@@ -247,6 +286,49 @@
       }
     }
 
+    // Se presenta con su nombre: lo guardamos y no se lo volvemos a preguntar.
+    if (early && !state.data.nombre) {
+      var intro = introduction(text);
+      if (intro) {
+        state.data.nombre = intro.name;
+        save();
+        var hello = 'Encantada, ' + intro.name + '.';
+        if ((step === 'inicio' || step === 'problema') && words(intro.rest) >= 4 && FITS.problema(intro.rest)) {
+          await say([hello]);
+          return onProblem(intro.rest);
+        }
+        if (step === 'inicio' || step === 'problema') {
+          state.step = 'problema';
+          return say([hello, QUESTIONS.problema]);
+        }
+        if (words(intro.rest) < 2) return say([hello, reask()]);
+        text = intro.rest;
+      }
+    }
+
+    // La respuesta no encaja con la pregunta: la primera vez lo aclara; la segunda sigue sin forzar.
+    var fitStep = step === 'inicio' ? 'problema' : step;
+    var loose = false;
+    if (FITS[fitStep] && !/^(hola|buenas|buenos d[ií]as|buenas tardes|hey|qu[eé] tal)[\s.!¡?¿,]*$/i.test(text.trim()) && !(fitStep === 'problema' && words(text) < 4) && !FITS[fitStep](text)) {
+      state.offtopic = state.offtopic || {};
+      state.offtopic[fitStep] = (state.offtopic[fitStep] || 0) + 1;
+      if (state.offtopic[fitStep] === 1) {
+        state.step = fitStep;
+        save();
+        return say([CLARIFY[fitStep]]);
+      }
+      if (fitStep === 'problema') {
+        state.data.problema = 'Prefiere contarlo directamente al equipo';
+        if (state.data.nombre) {
+          state.step = 'contacto';
+          save();
+          return say(['No pasa nada, a veces cuesta ponerlo en palabras. Lo más fácil es que lo hables directamente con el equipo.', '¿Dónde prefieres que te contactemos, ' + state.data.nombre + '? Puedes dejarme un email o un teléfono.']);
+        }
+        return ask('nombre', ['No pasa nada, a veces cuesta ponerlo en palabras. Lo más fácil es que lo hables directamente con el equipo.']);
+      }
+      loose = true;
+    }
+
     switch (step) {
       case 'inicio':
       case 'problema':
@@ -262,22 +344,23 @@
 
       case 'detalle':
         state.data.detalle = text;
-        if (!state.asked.herramientas) return ask('herramientas', [pick(ACKS)]);
-        return ask('tiempo', [pick(ACKS)]);
+        noteTools(text);
+        var detAck = loose ? 'De acuerdo, sigamos.' : pick(ACKS);
+        if (!state.asked.herramientas) return ask('herramientas', [detAck]);
+        return ask('tiempo', [detAck]);
 
       case 'herramientas':
         state.data.herramientas = text;
         state.asked.herramientas = true;
-        var found = (text.match(TOOLS) || []).map(function (t) { return t.toLowerCase(); });
-        var uniq = found.filter(function (t, i) { return found.indexOf(t) === i; });
-        var toolAck = uniq.length
-          ? 'Perfecto. Con ' + listJoin(uniq.map(prettyTool)) + ' se puede trabajar muy bien; muchas veces lo que falla no es la herramienta, sino cómo se conecta con lo demás.'
+        var names = toolNames(text);
+        var toolAck = names
+          ? 'Perfecto. Con ' + names + ' se puede trabajar muy bien; muchas veces lo que falla no es la herramienta, sino cómo se conecta con lo demás.'
           : 'Perfecto, eso me ayuda a situarlo.';
-        return ask('tiempo', [toolAck]);
+        return ask('tiempo', [loose ? 'De acuerdo, sigamos.' : toolAck]);
 
       case 'tiempo':
         state.data.tiempo = text;
-        return ask('empresa', ['Gracias. Aunque sea una estimación, ayuda mucho a ver dónde está el margen.']);
+        return ask('empresa', [loose ? 'De acuerdo, sigamos.' : 'Gracias. Aunque sea una estimación, ayuda mucho a ver dónde está el margen.']);
 
       case 'empresa':
         state.data.empresa = text;
@@ -285,7 +368,7 @@
         var sizeAck = !isNaN(n)
           ? (n <= 10 ? 'En equipos de ese tamaño, cada hora que se libera se nota muchísimo.' : 'Con un equipo así, los pequeños atascos se multiplican rápido, así que suele haber bastante margen.')
           : 'Gracias, me sirve para situarme.';
-        return ask('urgencia', [sizeAck]);
+        return ask('urgencia', [loose ? 'De acuerdo.' : sizeAck]);
 
       case 'urgencia':
         state.data.urgencia = text;
@@ -294,6 +377,11 @@
           : /explor|calma|mirando|informando|curiosidad/i.test(text)
             ? 'Me parece muy sensato: entenderlo bien antes de decidir es justo como nos gusta trabajar.'
             : 'Entendido.';
+        if (state.data.nombre) {
+          state.step = 'contacto';
+          save();
+          return say([urgAck, 'Me gustaría que alguien del equipo lo revise contigo personalmente, ' + state.data.nombre + '. ¿Dónde prefieres que te contactemos? Puedes dejarme un email o un teléfono.']);
+        }
         return ask('nombre', [urgAck]);
 
       case 'nombre':
@@ -306,7 +394,17 @@
         var email = (text.match(/[^\s@]+@[^\s@]+\.[^\s@]{2,}/) || [])[0];
         var phone = (text.match(/\+?\d[\d\s.-]{7,}\d/) || [])[0];
         if (!email && !phone) {
-          return say(['Creo que no lo he entendido bien. ¿Me lo escribes de nuevo? Puede ser un email o un teléfono.']);
+          if (/no s[eé]|no quiero|prefiero no|ni idea|paso|no tengo|mejor no|no me apetece/i.test(text)) {
+            state.contactRefused = (state.contactRefused || 0) + 1;
+            save();
+            if (state.contactRefused > 1) return say(['Entendido. Cuando quieras retomarlo, aquí estaré.']);
+            return say(['Sin problema, no hace falta que lo dejes ahora.', 'Si en otro momento prefieres escribirnos tú, tienes el email y el teléfono en la sección de contacto de la web. Y si cambias de idea, aquí estaré.']);
+          }
+          state.contactTries = (state.contactTries || 0) + 1;
+          save();
+          return say([state.contactTries === 1
+            ? 'Creo que no lo he entendido bien. ¿Me lo escribes de nuevo? Puede ser un email o un teléfono.'
+            : 'Solo necesito un email (algo como nombre@empresa.es) o un número de teléfono. Si prefieres no dejarlo, no pasa nada.']);
         }
         state.data.contacto = [email, phone && phone.replace(/[\s.-]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' · ');
         if (phone) return ask('horario', ['Apuntado.']);
@@ -335,14 +433,19 @@
     }
   }
 
+  // Si ya ha nombrado sus herramientas (Excel, Gmail…), no se las volvemos a preguntar.
+  function noteTools(text) {
+    TOOLS.lastIndex = 0;
+    if (!state.asked.herramientas && TOOLS.test(text)) {
+      state.asked.herramientas = true;
+      state.data.herramientas = toolNames(text);
+    }
+  }
+
   async function onProblem(text) {
     state.data.problema = state.data.problema ? state.data.problema + ' / ' + text : text;
-    var topic = null;
-    // Orden de prioridad: lo más concreto primero («las facturas llegan por correo» es administración).
-    ['administracion', 'seguimiento', 'informacion', 'atencion'].some(function (k) {
-      if (TOPICS[k].re.test(text)) { topic = k; return true; }
-      return false;
-    });
+    noteTools(text);
+    var topic = topicOf(text);
     state.topic = topic;
     if (topic === 'informacion') state.asked.herramientas = true;
     state.step = 'detalle';
@@ -436,8 +539,13 @@
     return parts.map(capitalize).join(' ');
   }
 
+  function toolNames(text) {
+    var found = (text.match(TOOLS) || []).map(function (t) { return t.toLowerCase(); });
+    return listJoin(found.filter(function (t, i) { return found.indexOf(t) === i; }).map(prettyTool));
+  }
+
   function prettyTool(t) {
-    var map = { excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
+    var map = { correo: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
     return map[t] || t;
   }
   function listJoin(items) {
