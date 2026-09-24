@@ -74,7 +74,14 @@
     atencion: {
       re: /client|consulta|correo|e-?mail|mail|whatsapp|llamad|tel[eé]fono|lead|contact|reserva|cita|atenci[oó]n|respond|mensaje/i,
       ack: 'Es de lo más habitual: las consultas llegan por varios sitios y darles respuesta a tiempo se vuelve una tarea en sí misma.',
-      ask: 'Cuando entra una consulta, ¿cómo os llega normalmente y quién se encarga de darle respuesta?'
+      ask: 'Cuando entra una consulta, ¿cómo os llega normalmente y quién se encarga de darle respuesta?',
+      // Pregunta doble: si solo responde a una parte, Fini pregunta por la otra.
+      parts: [
+        { re: /correo|mail|whatsapp|tel[eé]fono|llamad|\bweb\b|formulario|portal|redes|instagram|facebook|linkedin|idealista|fotocasa|habitaclia|milanuncios|google|chat|presencial|mostrador|\bapp\b/i,
+          follow: '¿Y por dónde os suelen llegar? Correo, teléfono, WhatsApp, la web…' },
+        { re: /\byo\b|nosotr|equipo|persona|compa[nñ]er|recepci|comercial|agente|quien (puede|est[eé]|pilla)|nadie|cada uno|encarg|secretari|gerente|due[nñ]|socio|jef[ea]|administrativ|atiend|me ocupo|lo llevo|lo llevamos|lo hace|las? (lleva|coge|contesta|responde)|contesto|respondo|respondemos|contestamos/i,
+          follow: '¿Y quién se encarga de responderlas?' }
+      ]
     },
     administracion: {
       re: /factur|presupuest|albar[aá]n|pedido|document|contrat|n[oó]mina|contab|cobro|pago|papeleo|gestor/i,
@@ -89,12 +96,16 @@
     seguimiento: {
       re: /seguimiento|olvid|pendient|se (nos )?pasa|se (nos )?pierde|recordar|aviso|plazo|retras|perdemos/i,
       ack: 'Eso pasa mucho: no es falta de ganas, es que hay demasiadas cosas que recordar a la vez.',
-      ask: '¿Qué suele quedarse pendiente con más frecuencia, y qué consecuencias tiene cuando pasa?'
+      ask: '¿Qué suele quedarse pendiente con más frecuencia, y qué consecuencias tiene cuando pasa?',
+      parts: [
+        { re: /perd|client|dinero|venta|queja|retras|multa|enfad|oportunidad|cobr|problema|reclam|consecuencia|nada grave|no pasa nada|se enfr[ií]a|se va/i,
+          follow: '¿Y qué pasa cuando se queda pendiente? ¿Se pierde algún cliente, se retrasa algo…?' }
+      ]
     }
   };
 
   var ACKS = ['Entiendo.', 'Tiene sentido.', 'Vale, me hago una idea.', 'Gracias, eso me ayuda mucho.'];
-  var TOOLS = /\bcorreo\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
+  var TOOLS = /\bcorreos?\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
 
   var QUESTIONS = {
     problema: 'Cuéntame, ¿qué es lo que más tiempo os consume ahora mismo?',
@@ -240,7 +251,7 @@
 
   var FITS = {
     problema: function (t) { return WORK.test(t) || !!topicOf(t); },
-    detalle: function (t) { return WORK.test(t) || !!topicOf(t) || /\d|cada|siempre|todos los|a veces|\byo\b|nosotros|nadie|encarg|diari|semanal/i.test(t); },
+    detalle: function (t) { return WORK.test(t) || !!topicOf(t) || ((state.topic && TOPICS[state.topic].parts) || []).some(function (p) { return p.re.test(t); }) || /\d|cada|siempre|todos los|a veces|\byo\b|nosotros|nadie|encarg|diari|semanal/i.test(t); },
     herramientas: function (t) { TOOLS.lastIndex = 0; return TOOLS.test(t) || /programa|aplicaci|\bapp\b|software|papel|libreta|agenda|nada|ninguna|a mano|correo|mail|m[oó]vil|ordenador|crm|erp|\bweb\b|herramient|sistema|hoja|tablet|plataforma/i.test(t); },
     tiempo: function (t) { return /\d|hora|minut|d[ií]a|semana|\bmes|mucho|poco|bastante|rato|jornada|nada|medio|media|ni idea|no s[eé]|depende|un par|varias|much[ií]simo/i.test(t); },
     empresa: function (t) { return WORK.test(t) || /\d|somos|sector|dedica|aut[oó]nom|freelance|pyme|tienda|restaurante|\bbar\b|cl[ií]nica|despacho|taller|agencia|consultor|distribu|fabric|constru|inmobiliari|hotel|academia|asesor|comercio|e-?commerce|log[ií]stic|transporte|abogad|dental|gimnasio|peluquer|estudio|colegio|\bong\b|asociaci/i.test(t); }
@@ -257,7 +268,7 @@
   function topicOf(text) {
     var found = null;
     // Orden de prioridad: lo más concreto primero («las facturas llegan por correo» es administración).
-    ['administracion', 'seguimiento', 'informacion', 'atencion'].some(function (k) {
+    ['seguimiento', 'administracion', 'informacion', 'atencion'].some(function (k) {
       if (TOPICS[k].re.test(text)) { found = k; return true; }
       return false;
     });
@@ -376,10 +387,32 @@
         return onProblem(text);
 
       case 'detalle':
-        state.data.detalle = text;
+        state.data.detalle = state.data.detalle ? state.data.detalle + ' / ' + text : text;
         noteTools(text);
-        var detAck = loose ? 'De acuerdo, sigamos.' : pick(ACKS);
-        if (!state.asked.herramientas) return ask('herramientas', [detAck]);
+        var echo = channelEcho(text);
+        var topicParts = (state.topic && TOPICS[state.topic].parts) || [];
+        if (!loose && !state.asked.followUp) {
+          var missing = topicParts.filter(function (p) { return !p.re.test(state.data.detalle); });
+          if (missing.length && words(text) < 40) {
+            state.asked.followUp = true;
+            save();
+            return say([echo || pick(ACKS), missing[0].follow]);
+          }
+        }
+        var detAck = loose ? 'De acuerdo, sigamos.' : (echo || whoAck(text) || pick(ACKS));
+        if (!state.asked.herramientas) {
+          if (state.data.canales || state.data.herramientas) {
+            state.step = 'herramientas';
+            save();
+            var known = (state.data.canales || []).concat((state.data.herramientas || '').split(/, | y /)).filter(Boolean)
+              .map(function (n) { return n === 'correo' ? 'el correo' : n === 'teléfono' ? 'el teléfono' : n; })
+              .filter(function (n, i, a) { return a.indexOf(n) === i && !/^(Idealista|Fotocasa|Habitaclia|Milanuncios|Wallapop|Booking|Airbnb|Amazon|Google)$/.test(n); });
+            var besides = known.length ? 'Además de ' + listJoin(known).replace(/^Además de el /, 'Además del ') : 'Además de eso';
+            besides = besides.replace(/^Además de el /, 'Además del ');
+            return say([detAck, besides + ', ¿usáis alguna otra herramienta para gestionarlo? Por ejemplo, Excel, un CRM o algún programa de gestión.']);
+          }
+          return ask('herramientas', [detAck]);
+        }
         return ask('tiempo', [detAck]);
 
       case 'herramientas':
@@ -466,12 +499,41 @@
     }
   }
 
+  // Por dónde le llegan las cosas, para repetírselo: «os llegan por correo, desde portales como Idealista».
+  var CHANNELS = [[/correo|e-?mail|\bmail/i, 'correo'], [/whatsapp/i, 'WhatsApp'], [/tel[eé]fono|llamad/i, 'teléfono'], [/\bweb\b|formulario/i, 'la web'], [/instagram/i, 'Instagram'], [/facebook/i, 'Facebook'], [/linkedin/i, 'LinkedIn']];
+  var PORTALS = [[/idealista/i, 'Idealista'], [/fotocasa/i, 'Fotocasa'], [/habitaclia/i, 'Habitaclia'], [/milanuncios/i, 'Milanuncios'], [/wallapop/i, 'Wallapop'], [/booking/i, 'Booking'], [/airbnb/i, 'Airbnb'], [/amazon/i, 'Amazon'], [/google/i, 'Google']];
+  function namesIn(list, text) {
+    return list.filter(function (c) { return c[0].test(text); }).map(function (c) { return c[1]; });
+  }
+  function channelEcho(text) {
+    var ch = namesIn(CHANNELS, text);
+    var po = namesIn(PORTALS, text);
+    if (!ch.length && !po.length) return '';
+    state.data.canales = ch.concat(po);
+    return 'Entiendo: os llegan ' + (ch.length ? 'por ' + listJoin(ch) : '') + (ch.length && po.length ? ', ' : '') + (po.length ? 'desde ' + (po.length > 1 ? 'portales como ' : '') + listJoin(po) : '') + '.';
+  }
+
+  // Reacción a quién se encarga de responder.
+  function whoAck(text) {
+    if (state.topic !== 'atencion') return '';
+    if (/cuando (puedo|puede|podemos|pueden)|quien (puede|pilla|est[eé])|nadie|si hay tiempo/i.test(text)) {
+      return /\byo\b|contesto|respondo|me ocupo|lo llevo/i.test(text)
+        ? 'Entiendo: las atiendes tú cuando puedes, y eso hace que algunas se queden esperando más de la cuenta.'
+        : 'Ahí suele estar el atasco: si no hay nadie claramente al cargo, las consultas se quedan esperando.';
+    }
+    if (/\byo\b|contesto|respondo|me ocupo|lo llevo/i.test(text)) return 'Entiendo, así que recae sobre ti, además de todo lo demás.';
+    return '';
+  }
+
   // Si ya ha nombrado sus herramientas (Excel, Gmail…), no se las volvemos a preguntar.
+  // El correo o WhatsApp solos no cuentan: son canales, y conviene saber qué más usan.
   function noteTools(text) {
     TOOLS.lastIndex = 0;
     if (!state.asked.herramientas && TOOLS.test(text)) {
-      state.asked.herramientas = true;
-      state.data.herramientas = toolNames(text);
+      var names = toolNames(text);
+      var onlyChannels = names.split(/, | y /).every(function (n) { return n === 'el correo' || n === 'WhatsApp'; });
+      state.data.herramientas = names;
+      if (!onlyChannels) state.asked.herramientas = true;
     }
   }
 
@@ -626,7 +688,7 @@
   }
 
   function prettyTool(t) {
-    var map = { correo: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
+    var map = { correo: 'el correo', correos: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
     return map[t] || t;
   }
   function listJoin(items) {
