@@ -55,8 +55,13 @@
   // ---------- Textos ----------
   var GREETING = [
     'Hola, soy Fini, la asistente virtual de SKURX SYSTEMS. Es un placer saludarte.',
+    '¿Cómo te llamas? Así sé cómo dirigirme a ti.'
+  ];
+
+  // Tras conocer el nombre (o si prefiere no darlo).
+  var INTRO = [
     'Muchas empresas llegan hasta aquí porque sienten que el día a día se les come el tiempo: tareas que se repiten, información repartida en mil sitios, cosas que se quedan pendientes…',
-    'Si algo de esto te suena, cuéntame un poco tu caso y vemos juntos cómo podemos ayudarte.'
+    'Si algo de esto te suena, cuéntame qué es lo que más tiempo os consume ahora mismo.'
   ];
 
   var HOW_WE_WORK = [
@@ -92,7 +97,7 @@
   var TOOLS = /\bcorreo\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
 
   var QUESTIONS = {
-    problema: 'Cuéntame, ¿qué es lo que más tiempo os quita ahora mismo?',
+    problema: 'Cuéntame, ¿qué es lo que más tiempo os consume ahora mismo?',
     herramientas: '¿Y con qué herramientas trabajáis en el día a día? Aunque sea Excel y el correo, me sirve.',
     tiempo: '¿Cuánto tiempo diríais que se os va en esto a la semana, más o menos?',
     empresa: 'Para situarme mejor: ¿a qué se dedica tu empresa y cuántas personas sois, más o menos?',
@@ -176,8 +181,10 @@
   // Retomar la última pregunta tras una duda del usuario: «Volviendo a tu caso, ¿…?»
   function reask() {
     var q = state.lastQ || QUESTIONS.problema;
+    if (state.step === 'saludo') return q;
     q = q.replace(/^.*?(¿)/, '$1').replace(/^¿Y /, '¿');
-    return 'Volviendo a tu caso, ' + q.charAt(0) + q.charAt(1).toLowerCase() + q.slice(2);
+    var lead = ['nombre', 'contacto', 'horario'].indexOf(state.step) !== -1 ? 'Como te decía, ' : 'Volviendo a tu caso, ';
+    return lead + q.charAt(0) + q.charAt(1).toLowerCase() + q.slice(2);
   }
 
   function setQuick(options) {
@@ -205,6 +212,10 @@
 
   // ---------- Intenciones generales ----------
   var INTENTS = [
+    {
+      re: /c[oó]mo est[aá]s|qu[eé] tal est[aá]s|qu[eé] tal (te va|todo|el d[ií]a)|c[oó]mo te va|c[oó]mo va todo/i,
+      reply: ['Muy bien, gracias por preguntar.']
+    },
     {
       re: /\b(eres|sois|es esto) (un |una )?(bot|robot|m[aá]quina|ia|inteligencia|humana?|persona|real)|hablo con (un|una) (bot|m[aá]quina|persona)/i,
       reply: ['Soy una asistente virtual: respondo de forma automática. Todo lo que me cuentes lo revisa después una persona del equipo de SKURX.']
@@ -236,7 +247,7 @@
   };
 
   var CLARIFY = {
-    problema: 'Creo que no te he entendido del todo. ¿Me cuentas qué parte del trabajo diario os quita más tiempo? Por ejemplo, responder a clientes, hacer facturas o pasar datos de un sitio a otro.',
+    problema: 'Creo que no te he entendido del todo. ¿Me cuentas qué parte del trabajo diario os consume más tiempo? Por ejemplo, responder a clientes, hacer facturas o pasar datos de un sitio a otro.',
     detalle: 'Perdona, no sé si te he seguido. Me refería a cómo es ese trabajo en el día a día: cada cuánto ocurre, quién lo hace o cómo lo hacéis ahora.',
     herramientas: 'Perdona, creo que no me he explicado bien. Me refería a los programas o aplicaciones que usáis: Excel, el correo, algún programa de gestión… Aunque sea papel, también me sirve.',
     tiempo: 'No hace falta que sea exacto. ¿Diríais que son unas pocas horas a la semana, o más bien varias horas al día?',
@@ -262,10 +273,30 @@
     return { name: capitalize(m[1]), rest: rest };
   }
 
+  var META = /dado por vencid|te (rindes|has rendido)|no me entiendes|no entiendes nada|no te enteras|eres tonta|qu[eé] torpe|no sirves/i;
+
+  // Cómo dirigirse a la persona: el nombre de pila (o compuesto, «María José»), con sus tildes.
+  var ACCENTS = { maria: 'María', jose: 'José', jesus: 'Jesús', angel: 'Ángel', angela: 'Ángela', angeles: 'Ángeles', ines: 'Inés', lucia: 'Lucía', sofia: 'Sofía', raul: 'Raúl', ramon: 'Ramón', ruben: 'Rubén', oscar: 'Óscar', alvaro: 'Álvaro', andres: 'Andrés', joaquin: 'Joaquín', julian: 'Julián', martin: 'Martín', nicolas: 'Nicolás', tomas: 'Tomás', sebastian: 'Sebastián', hector: 'Héctor', ivan: 'Iván', cesar: 'César', victor: 'Víctor', belen: 'Belén', rocio: 'Rocío', veronica: 'Verónica', monica: 'Mónica', fatima: 'Fátima', estefania: 'Estefanía', concepcion: 'Concepción', asuncion: 'Asunción', matias: 'Matías', adrian: 'Adrián', agustin: 'Agustín', benjamin: 'Benjamín', simon: 'Simón', lidia: 'Lidia' };
+  function accent(word) {
+    return ACCENTS[word.toLowerCase()] || word;
+  }
+  function trato() {
+    var parts = (state.data.nombre || '').split(' ').filter(Boolean);
+    if (!parts.length) return '';
+    var first = accent(parts[0]);
+    if (parts[1] && isKnownName(parts[1]) && isKnownName(parts[0])) return first + ' ' + accent(parts[1]);
+    return first;
+  }
+
   // ---------- Conversación ----------
   async function handle(text) {
     var step = state.step;
-    var early = ['inicio', 'problema', 'detalle', 'herramientas', 'tiempo', 'empresa', 'urgencia'].indexOf(step) !== -1;
+
+    if (step !== 'fin' && META.test(text)) {
+      await say(['Para nada. Solo quiero asegurarme de que el equipo reciba bien tu caso.']);
+      return say([reask()]);
+    }
+    var early = ['saludo', 'inicio', 'problema', 'detalle', 'herramientas', 'tiempo', 'empresa', 'urgencia'].indexOf(step) !== -1;
 
     if (early) {
       for (var i = 0; i < INTENTS.length; i++) {
@@ -279,12 +310,14 @@
           await say(INTENTS[i].reply);
           if (step === 'inicio' || step === 'problema') {
             state.step = 'problema';
-            return say([isHow ? 'Cuando quieras, cuéntame tu caso: ¿qué es lo que más tiempo os quita ahora mismo?' : QUESTIONS.problema]);
+            return say([isHow ? 'Cuando quieras, cuéntame tu caso: ¿qué es lo que más tiempo os consume ahora mismo?' : QUESTIONS.problema]);
           }
           return say([reask()]);
         }
       }
     }
+
+    if (step === 'saludo') return onName(text);
 
     // Se presenta con su nombre: lo guardamos y no se lo volvemos a preguntar.
     if (early && !state.data.nombre) {
@@ -292,7 +325,7 @@
       if (intro) {
         state.data.nombre = intro.name;
         save();
-        var hello = 'Encantada, ' + intro.name + '.';
+        var hello = 'Encantada, ' + trato() + '.';
         if ((step === 'inicio' || step === 'problema') && words(intro.rest) >= 4 && FITS.problema(intro.rest)) {
           await say([hello]);
           return onProblem(intro.rest);
@@ -322,7 +355,7 @@
         if (state.data.nombre) {
           state.step = 'contacto';
           save();
-          return say(['No pasa nada, a veces cuesta ponerlo en palabras. Lo más fácil es que lo hables directamente con el equipo.', '¿Dónde prefieres que te contactemos, ' + state.data.nombre + '? Puedes dejarme un email o un teléfono.']);
+          return say(['No pasa nada, a veces cuesta ponerlo en palabras. Lo más fácil es que lo hables directamente con el equipo.', '¿Dónde prefieres que te contactemos, ' + trato() + '? Puedes dejarme un email o un teléfono.']);
         }
         return ask('nombre', ['No pasa nada, a veces cuesta ponerlo en palabras. Lo más fácil es que lo hables directamente con el equipo.']);
       }
@@ -380,7 +413,7 @@
         if (state.data.nombre) {
           state.step = 'contacto';
           save();
-          return say([urgAck, 'Me gustaría que alguien del equipo lo revise contigo personalmente, ' + state.data.nombre + '. ¿Dónde prefieres que te contactemos? Puedes dejarme un email o un teléfono.']);
+          return say([urgAck, 'Me gustaría que alguien del equipo lo revise contigo personalmente, ' + trato() + '. ¿Dónde prefieres que te contactemos? Puedes dejarme un email o un teléfono.']);
         }
         return ask('nombre', [urgAck]);
 
@@ -388,7 +421,7 @@
         var name = extractName(text);
         if (!name) return say(['Perdona, no lo he entendido bien. ¿Cómo te llamas?']);
         state.data.nombre = name;
-        return ask('contacto', ['Encantada, ' + name + '.']);
+        return ask('contacto', ['Encantada, ' + trato() + '.']);
 
       case 'contacto':
         var email = (text.match(/[^\s@]+@[^\s@]+\.[^\s@]{2,}/) || [])[0];
@@ -440,6 +473,54 @@
       state.asked.herramientas = true;
       state.data.herramientas = toolNames(text);
     }
+  }
+
+  // Nombres habituales, para no confundir una frase («agua fría») con un nombre.
+  var COMMON_NAMES = 'alba alberto alejandra alejandro alex alfonso alfredo alicia alma alvaro amaia amparo ana andrea andres angel angela angeles anna antonia antonio ariadna arturo asuncion aurora beatriz belen benito bernardo blanca borja bruno camila carla carlos carles carmen carolina catalina cecilia celia cesar chema clara claudia concepcion concha consuelo cristian cristina daniel daniela david diana diego dolores eduardo elena eloy elisa elsa emilio emma encarna enrique eric ernesto esperanza esteban estefania ester esther eugenia eva fatima federico felipe felix fernando fini francisca francisco gabriel gema gemma gerard gloria gonzalo gregorio guillermo gustavo hector helena hugo ignacio ines inma inmaculada irene isaac isabel ismael ivan jaime javier jesus joan joaquin jordi jorge jose josefa josefina juan juana julia julian julio laia laura leire leo leonor lidia lola lorena lorenzo lourdes lucas lucia luis luisa lydia manolo manu manuel manuela marc marcos margarita maria mariano marina mario marisa marta martin martina mateo matias mercedes miguel mireia miriam monica montse montserrat nacho natalia nerea nicolas noelia nora nuria olga oliver oscar pablo paco paloma paola patricia pau paula pedro pepa pepe pilar pol quique rafael rafa ramon raquel raul rebeca ricardo roberto rocio rodrigo rosa rosario ruben salvador samuel sandra santi santiago sara sebastian sergio silvia sofia sonia susana teresa tomas toni ulises valentina valeria vanesa vanessa veronica vicente victor victoria virginia xavier yolanda'.split(' ');
+  function isKnownName(word) {
+    var w = word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return COMMON_NAMES.indexOf(w) !== -1;
+  }
+
+  // Primer paso: el nombre. Si en lugar del nombre cuenta su caso, lo atendemos y el nombre se pide al final.
+  async function onName(text) {
+    var afterName = async function (before) {
+      state.step = 'problema';
+      save();
+      await say(before.concat(INTRO));
+      setQuick(['¿Cómo trabajáis?']);
+    };
+    var intro = introduction(text);
+    if (intro) {
+      state.data.nombre = intro.name;
+      if (words(intro.rest) >= 4 && FITS.problema(intro.rest)) {
+        await say(['Encantada, ' + trato() + '.']);
+        return onProblem(intro.rest);
+      }
+      return afterName(['Encantada, ' + trato() + '.']);
+    }
+    if (/prefiero no|no quiero|mejor no|no hace falta|an[oó]nim|paso\b|da igual/i.test(text)) {
+      return afterName(['Sin problema.']);
+    }
+    if (/^(hola|buenas|buenos d[ií]as|buenas tardes|buenas noches|hey|qu[eé] tal)[\s.!¡?¿,]*$/i.test(text.trim())) {
+      return say(['Hola. ¿Me dices tu nombre? Así sé cómo dirigirme a ti.']);
+    }
+    if (words(text) >= 4 && FITS.problema(text)) {
+      state.step = 'problema';
+      return onProblem(text);
+    }
+    var name = words(text) <= 3 ? extractName(text) : '';
+    var parts = name.split(' ');
+    var plausible = name && (isKnownName(parts[0]) || parts.length === 1);
+    if (plausible && !NOT_A_NAME.test(parts[0]) && !WORK.test(text)) {
+      state.data.nombre = name;
+      return afterName(['Encantada, ' + trato() + '.']);
+    }
+    state.offtopic = state.offtopic || {};
+    state.offtopic.saludo = (state.offtopic.saludo || 0) + 1;
+    save();
+    if (state.offtopic.saludo === 1) return say(['Perdona, no sé si lo he entendido bien. ¿Cuál es tu nombre?']);
+    return afterName(['No te preocupes, lo dejamos para luego.']);
   }
 
   async function onProblem(text) {
@@ -526,17 +607,17 @@
     state.step = 'fin';
     save();
     await say([
-      'Listo, ' + d.nombre + '. Se lo he pasado al equipo y se pondrán en contacto contigo personalmente en cuanto lo revisen.',
+      'Listo' + (trato() ? ', ' + trato() : '') + '. Se lo he pasado al equipo y se pondrán en contacto contigo personalmente en cuanto lo revisen.',
       'Gracias por tu tiempo. Ha sido un placer.'
     ].concat(CONFIG.web3formsKey ? [] : ['(Modo prueba: esta conversación no se ha enviado.)']));
     setQuick(['Empezar de nuevo']);
   }
 
   function extractName(text) {
-    var t = text.trim().replace(/^(me llamo|soy|mi nombre es|ll[aá]mame|hola,? soy)\s+/i, '').replace(/[.,!¡?¿].*$/, '').trim();
+    var t = text.trim().replace(/^(hola|buenas)[\s,.!]+/i, '').replace(/^(me llamo|soy|mi nombre es|ll[aá]mame)\s+/i, '').replace(/[.,!¡?¿].*$/, '').trim();
     var parts = t.split(/\s+/).filter(function (w) { return /^[a-záéíóúüñ'-]+$/i.test(w); }).slice(0, 3);
     if (!parts.length || parts[0].length < 2) return '';
-    return parts.map(capitalize).join(' ');
+    return parts.map(function (w) { return accent(capitalize(w)); }).join(' ');
   }
 
   function toolNames(text) {
@@ -583,9 +664,8 @@
 
   async function start() {
     processing = true;
-    state.step = 'inicio';
+    state.step = 'saludo';
     await say(GREETING);
-    setQuick(['¿Cómo trabajáis?']);
     processing = false;
     if (pending.length) {
       var t = pending.join('\n');
@@ -619,7 +699,7 @@
   // Al volver otro día, Fini saluda y retoma la conversación donde se quedó.
   async function welcomeBack() {
     var quickBefore = (state.quick || []).filter(function (q) { return q !== 'Empezar de nuevo'; });
-    var name = state.data.nombre ? ', ' + state.data.nombre : '';
+    var name = trato() ? ', ' + trato() : '';
     processing = true;
     if (state.step === 'fin') {
       await say(['Hola de nuevo' + name + '. Ya tenemos tu caso y el equipo se pondrá en contacto contigo.', 'Si quieres contarme algo distinto, podemos empezar una conversación nueva.']);
