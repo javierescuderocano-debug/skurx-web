@@ -38,7 +38,7 @@
 
   // ---------- Textos ----------
   var GREETING = [
-    'Hola, soy Fini, la asistente virtual de SKURX SYSTEMS. Encantada de saludarte.',
+    'Hola, soy Fini, la asistente virtual de SKURX SYSTEMS. Es un placer saludarte.',
     'Muchas empresas llegan hasta aquí porque sienten que el día a día se les come el tiempo: tareas que se repiten, información repartida en mil sitios, cosas que se quedan pendientes…',
     'Si algo de esto te suena, cuéntame un poco tu caso y vemos juntos cómo podemos ayudarte.'
   ];
@@ -284,7 +284,7 @@
         var name = extractName(text);
         if (!name) return say(['Perdona, no lo he entendido bien. ¿Cómo te llamas?']);
         state.data.nombre = name;
-        return ask('contacto', ['Gracias, ' + name + '.']);
+        return ask('contacto', ['Encantada, ' + name + '.']);
 
       case 'contacto':
         var email = (text.match(/[^\s@]+@[^\s@]+\.[^\s@]{2,}/) || [])[0];
