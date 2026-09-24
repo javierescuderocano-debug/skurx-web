@@ -74,7 +74,14 @@
     atencion: {
       re: /client|consulta|correo|e-?mail|mail|whatsapp|llamad|tel[eé]fono|lead|contact|reserva|cita|atenci[oó]n|respond|mensaje/i,
       ack: 'Es de lo más habitual: las consultas llegan por varios sitios y darles respuesta a tiempo se vuelve una tarea en sí misma.',
-      ask: 'Cuando entra una consulta, ¿cómo os llega normalmente y quién se encarga de darle respuesta?'
+      ask: 'Cuando entra una consulta, ¿cómo os llega normalmente y quién se encarga de darle respuesta?',
+      // Pregunta doble: si solo responde a una parte, Fini pregunta por la otra.
+      parts: [
+        { re: /correo|mail|whatsapp|tel[eé]fono|llamad|\bweb\b|formulario|portal|redes|instagram|facebook|linkedin|idealista|fotocasa|habitaclia|milanuncios|google|chat|presencial|mostrador|\bapp\b/i,
+          follow: '¿Y por dónde os suelen llegar? Correo, teléfono, WhatsApp, la web…' },
+        { re: /\byo\b|nosotr|equipo|persona|compa[nñ]er|recepci|comercial|agente|quien (puede|est[eé]|pilla)|nadie|cada uno|encarg|secretari|gerente|due[nñ]|socio|jef[ea]|administrativ|atiend|me ocupo|lo llevo|lo llevamos|lo hace|las? (lleva|coge|contesta|responde)|contesto|respondo|respondemos|contestamos/i,
+          follow: '¿Y quién se encarga de responderlas?' }
+      ]
     },
     administracion: {
       re: /factur|presupuest|albar[aá]n|pedido|document|contrat|n[oó]mina|contab|cobro|pago|papeleo|gestor/i,
@@ -87,14 +94,18 @@
       ask: '¿Con qué herramientas trabajáis ahora mismo? Aunque sea Excel y el correo, me sirve.'
     },
     seguimiento: {
-      re: /seguimiento|olvid|pendient|se (nos )?pasa|se (nos )?pierde|recordar|aviso|plazo|retras|perdemos/i,
+      re: /seguimiento|olvid|pendient|se (nos )?pasa|se (nos )?pierden?\b|recordar|aviso|plazo|retras/i,
       ack: 'Eso pasa mucho: no es falta de ganas, es que hay demasiadas cosas que recordar a la vez.',
-      ask: '¿Qué suele quedarse pendiente con más frecuencia, y qué consecuencias tiene cuando pasa?'
+      ask: '¿Qué suele quedarse pendiente con más frecuencia, y qué consecuencias tiene cuando pasa?',
+      parts: [
+        { re: /perd|client|dinero|venta|queja|retras|multa|enfad|oportunidad|cobr|problema|reclam|consecuencia|nada grave|no pasa nada|se enfr[ií]a|se va/i,
+          follow: '¿Y qué pasa cuando se queda pendiente? ¿Se pierde algún cliente, se retrasa algo…?' }
+      ]
     }
   };
 
   var ACKS = ['Entiendo.', 'Tiene sentido.', 'Vale, me hago una idea.', 'Gracias, eso me ayuda mucho.'];
-  var TOOLS = /\bcorreo\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
+  var TOOLS = /\bcorreos?\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
 
   var QUESTIONS = {
     problema: 'Cuéntame, ¿qué es lo que más tiempo os consume ahora mismo?',
@@ -240,7 +251,7 @@
 
   var FITS = {
     problema: function (t) { return WORK.test(t) || !!topicOf(t); },
-    detalle: function (t) { return WORK.test(t) || !!topicOf(t) || /\d|cada|siempre|todos los|a veces|\byo\b|nosotros|nadie|encarg|diari|semanal/i.test(t); },
+    detalle: function (t) { return WORK.test(t) || !!topicOf(t) || ((state.topic && TOPICS[state.topic].parts) || []).some(function (p) { return p.re.test(t); }) || /\d|cada|siempre|todos los|a veces|\byo\b|nosotros|nadie|encarg|diari|semanal/i.test(t); },
     herramientas: function (t) { TOOLS.lastIndex = 0; return TOOLS.test(t) || /programa|aplicaci|\bapp\b|software|papel|libreta|agenda|nada|ninguna|a mano|correo|mail|m[oó]vil|ordenador|crm|erp|\bweb\b|herramient|sistema|hoja|tablet|plataforma/i.test(t); },
     tiempo: function (t) { return /\d|hora|minut|d[ií]a|semana|\bmes|mucho|poco|bastante|rato|jornada|nada|medio|media|ni idea|no s[eé]|depende|un par|varias|much[ií]simo/i.test(t); },
     empresa: function (t) { return WORK.test(t) || /\d|somos|sector|dedica|aut[oó]nom|freelance|pyme|tienda|restaurante|\bbar\b|cl[ií]nica|despacho|taller|agencia|consultor|distribu|fabric|constru|inmobiliari|hotel|academia|asesor|comercio|e-?commerce|log[ií]stic|transporte|abogad|dental|gimnasio|peluquer|estudio|colegio|\bong\b|asociaci/i.test(t); }
@@ -257,7 +268,7 @@
   function topicOf(text) {
     var found = null;
     // Orden de prioridad: lo más concreto primero («las facturas llegan por correo» es administración).
-    ['administracion', 'seguimiento', 'informacion', 'atencion'].some(function (k) {
+    ['seguimiento', 'administracion', 'informacion', 'atencion'].some(function (k) {
       if (TOPICS[k].re.test(text)) { found = k; return true; }
       return false;
     });
@@ -348,6 +359,9 @@
       if (state.offtopic[fitStep] === 1) {
         state.step = fitStep;
         save();
+        if (fitStep === 'tiempo' && /demasiad|much[ií]simo|un mont[oó]n|una barbaridad|un mundo|infinit|una locura|much[ií]simas/i.test(text)) {
+          return say(['Uf, eso suena a mucho.', 'Para hacerme una idea: ¿son unas pocas horas a la semana, o más bien varias horas al día?']);
+        }
         return say([CLARIFY[fitStep]]);
       }
       if (fitStep === 'problema') {
@@ -376,14 +390,36 @@
         return onProblem(text);
 
       case 'detalle':
-        state.data.detalle = text;
+        state.data.detalle = state.data.detalle ? state.data.detalle + ' / ' + text : text;
         noteTools(text);
-        var detAck = loose ? 'De acuerdo, sigamos.' : pick(ACKS);
-        if (!state.asked.herramientas) return ask('herramientas', [detAck]);
+        var echo = channelEcho(text);
+        var topicParts = (state.topic && TOPICS[state.topic].parts) || [];
+        if (!loose && !state.asked.followUp) {
+          var missing = topicParts.filter(function (p) { return !p.re.test(state.data.detalle); });
+          if (missing.length && words(text) < 40) {
+            state.asked.followUp = true;
+            save();
+            return say([echo || pick(ACKS), missing[0].follow]);
+          }
+        }
+        var detAck = loose ? 'De acuerdo, sigamos.' : (echo || whoAck(text) || pick(ACKS));
+        if (!state.asked.herramientas) {
+          if (state.data.canales || state.data.herramientas) {
+            state.step = 'herramientas';
+            save();
+            var known = (state.data.canales || []).concat((state.data.herramientas || '').split(/, | y /)).filter(Boolean)
+              .map(function (n) { return n === 'correo' ? 'el correo' : n === 'teléfono' ? 'el teléfono' : n; })
+              .filter(function (n, i, a) { return a.indexOf(n) === i && !/^(Idealista|Fotocasa|Habitaclia|Milanuncios|Wallapop|Booking|Airbnb|Amazon|Google)$/.test(n); });
+            var besides = known.length ? 'Además de ' + listJoin(known).replace(/^Además de el /, 'Además del ') : 'Además de eso';
+            besides = besides.replace(/^Además de el /, 'Además del ');
+            return say([detAck, besides + ', ¿usáis alguna otra herramienta para gestionarlo? Por ejemplo, Excel, un CRM o algún programa de gestión.']);
+          }
+          return ask('herramientas', [detAck]);
+        }
         return ask('tiempo', [detAck]);
 
       case 'herramientas':
-        state.data.herramientas = text;
+        state.data.herramientas = toolNames(text) || text;
         state.asked.herramientas = true;
         var names = toolNames(text);
         var toolAck = names
@@ -393,14 +429,29 @@
 
       case 'tiempo':
         state.data.tiempo = text;
-        return ask('empresa', [loose ? 'De acuerdo, sigamos.' : 'Gracias. Aunque sea una estimación, ayuda mucho a ver dónde está el margen.']);
+        return ask('empresa', [loose ? 'De acuerdo, sigamos.' : timeAck(text)]);
 
       case 'empresa':
-        state.data.empresa = text;
-        var n = parseInt((text.match(/\d+/) || [])[0], 10);
+        state.data.empresa = state.data.empresa ? state.data.empresa + ' / ' + text : text;
+        var hasSize = /\d|solo yo|yo solo|aut[oó]nom|freelance|\b(uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|doce|quince|veinte|treinta|cien)\b|pocos|equipo peque/i.test(state.data.empresa);
+        var sectorText = state.data.empresa.toLowerCase().replace(/somos|\d+|personas?|emplead[oa]s?|trabajador[ea]s?|m[aá]s o menos|aproximadamente|en total|unos|unas|\buno\b|\buna\b|\by\b|en la empresa|en el equipo|m[aá]s|menos|solo|[\s,.\/]+/gi, ' ').trim();
+        var hasSector = sectorText.split(' ').some(function (w) { return w.length > 3; });
+        if (!loose && !state.asked.empresaFollow && (!hasSize || !hasSector)) {
+          state.asked.empresaFollow = true;
+          save();
+          if (!hasSector) {
+            var early = sizeAckFor(state.data.empresa);
+            if (early) state.asked.sizeAckSaid = true;
+            return say([early || 'Gracias.', '¿Y a qué os dedicáis?']);
+          }
+          return say(['Gracias.', '¿Y cuántas personas sois, más o menos?']);
+        }
+        var n = parseInt((state.data.empresa.match(/\d+/) || [])[0], 10);
         var sizeAck = !isNaN(n)
           ? (n <= 10 ? 'En equipos de ese tamaño, cada hora que se libera se nota muchísimo.' : 'Con un equipo así, los pequeños atascos se multiplican rápido, así que suele haber bastante margen.')
           : 'Gracias, me sirve para situarme.';
+        // Si ya comentó el tamaño del equipo al repreguntar, no lo repite.
+        if (state.asked.sizeAckSaid) sizeAck = 'Gracias, me hago una idea.';
         return ask('urgencia', [loose ? 'De acuerdo.' : sizeAck]);
 
       case 'urgencia':
@@ -427,6 +478,21 @@
         var email = (text.match(/[^\s@]+@[^\s@]+\.[^\s@]{2,}/) || [])[0];
         var phone = (text.match(/\+?\d[\d\s.-]{7,}\d/) || [])[0];
         if (!email && !phone) {
+          // Pide una reunión, una videollamada o una llamada: se apunta como preferencia.
+          var meeting = /presencial|en persona|reuni[oó]n|vernos|quedar|visita|pasarme|pasaros|vuestra oficina|cara a cara/i.test(text) ? 'Reunión presencial'
+            : /videollamada|v[ií]deo|zoom|meet|teams/i.test(text) ? 'Videollamada'
+            : /ll[aá]mame|que me llam|llamada|por tel[eé]fono/i.test(text) ? 'Llamada' : '';
+          if (meeting) {
+            state.data.preferencia = meeting;
+            save();
+            var why = meeting === 'Reunión presencial'
+              ? 'Claro, una reunión en persona es perfecta: es como mejor se entiende cómo trabaja una empresa.'
+              : meeting === 'Videollamada' ? 'Claro, una videollamada funciona muy bien.' : 'Claro, te llamamos sin problema.';
+            return say([why, 'Para organizarla, el equipo necesita poder contactarte. ¿Me dejas un email o un teléfono?'.replace('organizarla', meeting === 'Llamada' ? 'llamarte' : 'organizarla')]);
+          }
+          if (/\?/.test(text) && !/no s[eé]|no quiero|prefiero no/i.test(text)) {
+            return say(['Buena pregunta. Eso lo podrá resolver el equipo contigo directamente.', 'Para ello, ¿me dejas un email o un teléfono?']);
+          }
           if (/no s[eé]|no quiero|prefiero no|ni idea|paso|no tengo|mejor no|no me apetece/i.test(text)) {
             state.contactRefused = (state.contactRefused || 0) + 1;
             save();
@@ -466,12 +532,64 @@
     }
   }
 
+  // Por dónde le llegan las cosas, para repetírselo: «os llegan por correo, desde portales como Idealista».
+  var CHANNELS = [[/correo|e-?mail|\bmail/i, 'correo'], [/whatsapp/i, 'WhatsApp'], [/tel[eé]fono|llamad/i, 'teléfono'], [/\bweb\b|formulario/i, 'la web'], [/instagram/i, 'Instagram'], [/facebook/i, 'Facebook'], [/linkedin/i, 'LinkedIn']];
+  var PORTALS = [[/idealista/i, 'Idealista'], [/fotocasa/i, 'Fotocasa'], [/habitaclia/i, 'Habitaclia'], [/milanuncios/i, 'Milanuncios'], [/wallapop/i, 'Wallapop'], [/booking/i, 'Booking'], [/airbnb/i, 'Airbnb'], [/amazon/i, 'Amazon'], [/google/i, 'Google']];
+  function namesIn(list, text) {
+    return list.filter(function (c) { return c[0].test(text); }).map(function (c) { return c[1]; });
+  }
+  function channelEcho(text) {
+    if (state.topic !== 'atencion') return '';
+    var ch = namesIn(CHANNELS, text);
+    var po = namesIn(PORTALS, text);
+    if (!ch.length && !po.length) return '';
+    state.data.canales = ch.concat(po);
+    return 'Entiendo: os llegan ' + (ch.length ? 'por ' + listJoin(ch) : '') + (ch.length && po.length ? ', ' : '') + (po.length ? 'desde ' + (po.length > 1 ? 'portales como ' : '') + listJoin(po) : '') + '.';
+  }
+
+  // Reacción al tiempo que se pierde: «varias horas al día» es más de una jornada a la semana.
+  function timeAck(text) {
+    var m = text.match(/\d+([.,]\d+)?/);
+    var n = m ? parseFloat(m[0].replace(',', '.')) : NaN;
+    var perDay = /al d[ií]a|diari|cada d[ií]a|todos los d[ií]as|por d[ií]a/i.test(text);
+    var perMonth = /al mes|mensual|cada mes/i.test(text);
+    if (!isNaN(n) && /minut/i.test(text) && !/hora/i.test(text)) n = n / 60;
+    var weekly = !isNaN(n) ? (perDay ? n * 5 : perMonth ? n / 4 : n)
+      : (/varias|muchas|bastantes/i.test(text) ? (perDay ? 15 : 8) : NaN);
+    if (weekly >= 8) {
+      return (perDay ? 'Eso es mucho tiempo: al cabo de la semana suma más de una jornada entera.' : 'Eso es más de una jornada de trabajo a la semana.') + ' Ahí suele haber bastante margen.';
+    }
+    if (weekly > 0 && weekly <= 3) return 'Aunque parezca poco, al cabo del año son muchas horas.';
+    return 'Gracias. Aunque sea una estimación, ayuda mucho a ver dónde está el margen.';
+  }
+
+  function sizeAckFor(text) {
+    var n = parseInt((text.match(/\d+/) || [])[0], 10);
+    if (isNaN(n)) return '';
+    return n <= 10 ? 'En equipos de ese tamaño, cada hora que se libera se nota muchísimo.' : 'Con un equipo así, los pequeños atascos se multiplican rápido, así que suele haber bastante margen.';
+  }
+
+  // Reacción a quién se encarga de responder.
+  function whoAck(text) {
+    if (state.topic !== 'atencion') return '';
+    if (/cuando (puedo|puede|podemos|pueden)|quien (puede|pilla|est[eé])|nadie|si hay tiempo/i.test(text)) {
+      return /\byo\b|contesto|respondo|me ocupo|lo llevo/i.test(text)
+        ? 'Entiendo: las atiendes tú cuando puedes, y eso hace que algunas se queden esperando más de la cuenta.'
+        : 'Ahí suele estar el atasco: si no hay nadie claramente al cargo, las consultas se quedan esperando.';
+    }
+    if (/\byo\b|contesto|respondo|me ocupo|lo llevo/i.test(text)) return 'Entiendo, así que recae sobre ti, además de todo lo demás.';
+    return '';
+  }
+
   // Si ya ha nombrado sus herramientas (Excel, Gmail…), no se las volvemos a preguntar.
+  // El correo o WhatsApp solos no cuentan: son canales, y conviene saber qué más usan.
   function noteTools(text) {
     TOOLS.lastIndex = 0;
     if (!state.asked.herramientas && TOOLS.test(text)) {
-      state.asked.herramientas = true;
-      state.data.herramientas = toolNames(text);
+      var names = toolNames(text);
+      var onlyChannels = names.split(/, | y /).every(function (n) { return n === 'el correo' || n === 'WhatsApp'; });
+      state.data.herramientas = names;
+      if (!onlyChannels) state.asked.herramientas = true;
     }
   }
 
@@ -549,6 +667,7 @@
     if (d.urgencia) list.push(['Urgencia', d.urgencia]);
     list.push(['Nombre', d.nombre]);
     list.push(['Contacto', d.contacto + (d.horario ? ' (' + d.horario.toLowerCase() + ')' : '')]);
+    if (d.preferencia) list.push(['Prefiere', d.preferencia]);
     if (d.notas) list.push(['Añadido', d.notas]);
     save();
     return say((before || []).concat([{ text: 'Te resumo lo que me has contado:', list: list }, '¿Está todo bien?'])).then(function () {
@@ -578,6 +697,7 @@
             nombre: d.nombre,
             contacto: d.contacto,
             horario: d.horario || '',
+            preferencia: d.preferencia || '',
             situacion: d.problema,
             detalle: d.detalle || '',
             herramientas: d.herramientas || '',
@@ -626,7 +746,7 @@
   }
 
   function prettyTool(t) {
-    var map = { correo: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
+    var map = { correo: 'el correo', correos: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
     return map[t] || t;
   }
   function listJoin(items) {
