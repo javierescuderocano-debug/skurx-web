@@ -206,6 +206,10 @@
   // ---------- Intenciones generales ----------
   var INTENTS = [
     {
+      re: /c[oó]mo est[aá]s|qu[eé] tal est[aá]s|qu[eé] tal (te va|todo|el d[ií]a)|c[oó]mo te va|c[oó]mo va todo/i,
+      reply: ['Muy bien, gracias por preguntar.']
+    },
+    {
       re: /\b(eres|sois|es esto) (un |una )?(bot|robot|m[aá]quina|ia|inteligencia|humana?|persona|real)|hablo con (un|una) (bot|m[aá]quina|persona)/i,
       reply: ['Soy una asistente virtual: respondo de forma automática. Todo lo que me cuentes lo revisa después una persona del equipo de SKURX.']
     },
