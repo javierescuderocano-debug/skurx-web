@@ -452,7 +452,7 @@
           state.asked.empresaFollow = true;
           state.step = 'empresa';
           save();
-          return say([loose ? 'De acuerdo, sigamos.' : timeAck(text), 'Me has comentado que sois ' + known[1] + '. ¿Cuántas personas sois, más o menos?']);
+          return say([loose ? 'De acuerdo, sigamos.' : timeAck(text), (state.data.sector ? 'Entiendo que sois ' : 'Me has comentado que sois ') + known[1] + '. ¿Cuántas personas sois, más o menos?']);
         }
         return ask('empresa', [loose ? 'De acuerdo, sigamos.' : timeAck(text)]);
 
@@ -606,6 +606,7 @@
     [/agencia de viajes/i, 'Agencia de viajes', 'una agencia de viajes'], [/e-?commerce|tienda online/i, 'Tienda online', 'una tienda online']
   ];
   function sectorSaid() {
+    if (state.data.sector) return state.data.sector;
     var said = state.history.filter(function (m) { return m.who === 'user'; }).map(function (m) { return m.text; }).join(' ');
     for (var i = 0; i < SECTORS.length; i++) if (SECTORS[i][0].test(said)) return [SECTORS[i][1], SECTORS[i][2]];
     return null;
@@ -838,7 +839,10 @@
       state.data.interes = AUDIT;
       save();
     }
-    await say(audit ? GREETING_AUDIT : GREETING);
+    var sec = state.data.sector;
+    if (audit) await say(sec ? [GREETING_AUDIT[0], 'Veo que te interesa la Auditoría Operativa Inicial para ' + sec[2] + '. Te hago unas preguntas rápidas para que el equipo la prepare con tu caso.', GREETING_AUDIT[2]] : GREETING_AUDIT);
+    else if (sec) await say([GREETING_AUDIT[0], 'Veo que vienes de la página de ' + sec[2] + '. Te hago unas preguntas rápidas para entender vuestro caso.', GREETING_AUDIT[2]]);
+    else await say(GREETING);
     processing = false;
     if (pending.length) {
       var t = pending.join('\n');
@@ -902,6 +906,12 @@
     event.preventDefault();
     trigger = event.currentTarget;
     var audit = trigger && trigger.getAttribute('data-fini-intent') === 'auditoria';
+    // Desde una página de sector: «Inmobiliaria|una inmobiliaria|inmobiliarias»
+    var sectorAttr = (trigger && trigger.getAttribute('data-fini-sector')) || document.body.getAttribute('data-fini-sector');
+    if (sectorAttr && !state.data.sector) {
+      state.data.sector = sectorAttr.split('|');
+      save();
+    }
     if (audit && state.history.length && !state.data.interes) {
       state.data.interes = AUDIT;
       save();
