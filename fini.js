@@ -452,7 +452,7 @@
           state.asked.empresaFollow = true;
           state.step = 'empresa';
           save();
-          return say([loose ? 'De acuerdo, sigamos.' : timeAck(text), 'Me has comentado que sois ' + known[1] + '. ¿Cuántas personas sois, más o menos?']);
+          return say([loose ? 'De acuerdo, sigamos.' : timeAck(text), (state.data.sector ? 'Entiendo que sois ' : 'Me has comentado que sois ') + known[1] + '. ¿Cuántas personas sois, más o menos?']);
         }
         return ask('empresa', [loose ? 'De acuerdo, sigamos.' : timeAck(text)]);
 
