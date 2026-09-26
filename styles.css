@@ -153,3 +153,5 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 .ba-frame input:focus-visible~.ba-handle,.ba-frame:has(input:focus-visible) .ba-handle{outline:2px solid #fff}
 .ba-tag{position:absolute;top:14px;z-index:1;padding:5px 11px;border-radius:999px;background:rgba(7,16,18,.72);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:.18em;pointer-events:none}
 .ba-tag-a{left:14px}.ba-tag-d{right:14px}
+.ba-tag{transition:opacity .25s ease}
+.ba-solo-antes .ba-tag-d,.ba-solo-despues .ba-tag-a{opacity:0}
