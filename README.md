@@ -27,3 +27,7 @@ Este repositorio es el código fuente de **https://skurx.es**. Se publica autom�
 3. En uno o dos minutos está en skurx.es.
 
 Cada cambio queda guardado en el historial (pestaña *Commits*), así que siempre se puede volver a una versión anterior.
+
+## Si cambias `styles.css` o `fini.js`
+
+En `index.html` (y en `privacidad.html` y `404.html` para los estilos) esos archivos se cargan con una versión, por ejemplo `fini.js?v=20260926b`. Cuando los modifiques, cambia ese número (por ejemplo, a la fecha del día). Así los navegadores descargan la versión nueva al momento en vez de usar la que tenían guardada.
