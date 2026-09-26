@@ -15,6 +15,7 @@ Este repositorio es el código fuente de **https://skurx.es**. Se publica autom�
 | `og-image.jpg` | Imagen que se ve al compartir el enlace en redes o WhatsApp |
 | `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png` | Iconos de la pestaña y del móvil |
 | `privacidad.html` | Política de privacidad |
+| `sectores/` | Una página por sector (inmobiliarias, gestorías, automoción…). Los textos de cada una están en su archivo |
 | `404.html` | Página de error |
 | `CNAME` | Conecta el repositorio con el dominio skurx.es (no tocar) |
 | `robots.txt`, `sitemap.xml` | Para Google |
