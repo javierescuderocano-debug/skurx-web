@@ -104,7 +104,7 @@
   };
 
   var ACKS = ['Entiendo.', 'Tiene sentido.', 'Vale, me hago una idea.', 'Gracias, eso me ayuda mucho.'];
-  var TOOLS = /\bcorreos?\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol/gi;
+  var TOOLS = /\bcorreos?\b|excel|google sheets|hojas de c[aá]lculo|gmail|outlook|whatsapp|holded|a3|sage|factusol|odoo|hubspot|salesforce|notion|trello|asana|drive|dropbox|shopify|woocommerce|wordpress|teams|slack|zoho|quickbooks|contasol|\bcrm\b|\berp\b/gi;
 
   var QUESTIONS = {
     problema: 'Cuéntame, ¿qué es lo que más tiempo os consume ahora mismo?',
@@ -428,6 +428,14 @@
 
       case 'tiempo':
         state.data.tiempo = text;
+        var known = !state.data.empresa && sectorSaid();
+        if (known) {
+          state.data.empresa = known[0];
+          state.asked.empresaFollow = true;
+          state.step = 'empresa';
+          save();
+          return say([loose ? 'De acuerdo, sigamos.' : timeAck(text), 'Me has comentado que sois ' + known[1] + '. ¿Cuántas personas sois, más o menos?']);
+        }
         return ask('empresa', [loose ? 'De acuerdo, sigamos.' : timeAck(text)]);
 
       case 'empresa':
@@ -541,9 +549,16 @@
     if (state.topic !== 'atencion') return '';
     var ch = namesIn(CHANNELS, text);
     var po = namesIn(PORTALS, text);
-    if (!ch.length && !po.length) return '';
+    var anyPortal = po.length || /portal/i.test(text);
+    var inPerson = /presencial|en persona|en la oficina|mostrador|en tienda|vienen a vernos|se acercan|p[uú]blico/i.test(text);
+    if (!ch.length && !anyPortal && !inPerson) return '';
     state.data.canales = ch.concat(po);
-    return 'Entiendo: os llegan ' + (ch.length ? 'por ' + listJoin(ch) : '') + (ch.length && po.length ? ', ' : '') + (po.length ? 'desde ' + (po.length > 1 ? 'portales como ' : '') + listJoin(po) : '') + '.';
+    var parts = [];
+    if (ch.length) parts.push('por ' + listJoin(ch));
+    if (po.length) parts.push('desde ' + (po.length > 1 ? 'portales como ' : '') + listJoin(po));
+    else if (anyPortal) parts.push('desde los portales');
+    if (inPerson) parts.push('en persona');
+    return 'Entiendo: os llegan ' + listJoin(parts) + '.';
   }
 
   // Reacción al tiempo que se pierde: «varias horas al día» es más de una jornada a la semana.
@@ -560,6 +575,22 @@
     }
     if (weekly > 0 && weekly <= 3) return 'Aunque parezca poco, al cabo del año son muchas horas.';
     return 'Gracias. Aunque sea una estimación, ayuda mucho a ver dónde está el margen.';
+  }
+
+  // Sector que el usuario ya ha mencionado en la conversación, para no volver a preguntárselo.
+  var SECTORS = [
+    [/inmobiliari/i, 'Inmobiliaria', 'una inmobiliaria'], [/gestor[ií]a/i, 'Gestoría', 'una gestoría'], [/asesor[ií]a/i, 'Asesoría', 'una asesoría'],
+    [/concesionari/i, 'Concesionario', 'un concesionario'], [/compraventa de (coches|veh[ií]culos)/i, 'Compraventa de vehículos', 'una compraventa de vehículos'],
+    [/taller/i, 'Taller', 'un taller'], [/cl[ií]nica dental|dental/i, 'Clínica dental', 'una clínica dental'], [/cl[ií]nica/i, 'Clínica', 'una clínica'],
+    [/restaurante/i, 'Restaurante', 'un restaurante'], [/hotel/i, 'Hotel', 'un hotel'], [/academia/i, 'Academia', 'una academia'],
+    [/despacho de abogados|abogad/i, 'Despacho de abogados', 'un despacho de abogados'], [/reformas/i, 'Reformas', 'una empresa de reformas'],
+    [/constructora/i, 'Constructora', 'una constructora'], [/gimnasio/i, 'Gimnasio', 'un gimnasio'], [/peluquer/i, 'Peluquería', 'una peluquería'],
+    [/agencia de viajes/i, 'Agencia de viajes', 'una agencia de viajes'], [/e-?commerce|tienda online/i, 'Tienda online', 'una tienda online']
+  ];
+  function sectorSaid() {
+    var said = state.history.filter(function (m) { return m.who === 'user'; }).map(function (m) { return m.text; }).join(' ');
+    for (var i = 0; i < SECTORS.length; i++) if (SECTORS[i][0].test(said)) return [SECTORS[i][1], SECTORS[i][2]];
+    return null;
   }
 
   function sizeAckFor(text) {
@@ -745,7 +776,7 @@
   }
 
   function prettyTool(t) {
-    var map = { correo: 'el correo', correos: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets' };
+    var map = { correo: 'el correo', correos: 'el correo', excel: 'Excel', gmail: 'Gmail', outlook: 'Outlook', whatsapp: 'WhatsApp', holded: 'Holded', a3: 'A3', sage: 'Sage', factusol: 'FactuSOL', odoo: 'Odoo', hubspot: 'HubSpot', salesforce: 'Salesforce', notion: 'Notion', trello: 'Trello', asana: 'Asana', drive: 'Drive', dropbox: 'Dropbox', shopify: 'Shopify', woocommerce: 'WooCommerce', wordpress: 'WordPress', teams: 'Teams', slack: 'Slack', zoho: 'Zoho', quickbooks: 'QuickBooks', contasol: 'ContaSOL', 'google sheets': 'Google Sheets', crm: 'un CRM', erp: 'un ERP' };
     return map[t] || t;
   }
   function listJoin(items) {
