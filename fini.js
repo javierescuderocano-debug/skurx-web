@@ -2,11 +2,10 @@
 // Paso 1 (sin IA): guion propio que adapta las preguntas a lo que cuenta el usuario.
 (function () {
   var CONFIG = {
-    // El chat solo se activa cuando exista la Política de privacidad.
-    // Mientras tanto se puede probar abriendo la web con ?fini=1
-    enabled: false,
+    // Activado el 26/09/2026, con la Política de privacidad publicada en /privacidad.html
+    enabled: true,
     // Clave gratuita de https://web3forms.com (asociada a info@skurx.es). Vacía = modo prueba, no se envía nada.
-    web3formsKey: '',
+    web3formsKey: '413a9355-a4b8-472a-a87e-9cbd9b932651',
     storageKey: 'skurx-fini-v1',
     // La conversación se guarda en el navegador del usuario para que pueda retomarla otro día.
     keepDays: 30
