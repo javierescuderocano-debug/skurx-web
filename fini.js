@@ -57,6 +57,14 @@
     '¿Cómo te llamas? Así sé cómo dirigirme a ti.'
   ];
 
+  // Al abrir Fini desde el botón «Solicitar auditoría».
+  var AUDIT = 'Auditoría Operativa Inicial';
+  var GREETING_AUDIT = [
+    'Hola, soy Fini, la asistente virtual de SKURX SYSTEMS.',
+    'Veo que te interesa la Auditoría Operativa Inicial. Te hago unas preguntas rápidas para que el equipo la prepare con tu caso.',
+    '¿Cómo te llamas? Así sé cómo dirigirme a ti.'
+  ];
+
   // Tras conocer el nombre (o si prefiere no darlo).
   var INTRO = [
     'Muchas empresas llegan hasta aquí porque sienten que el día a día se les come el tiempo: tareas que se repiten, información repartida en mil sitios, cosas que se quedan pendientes…',
@@ -223,6 +231,15 @@
   // ---------- Intenciones generales ----------
   var INTENTS = [
     {
+      re: /auditor[ií]a/i,
+      reply: function () {
+        if (state.data.interes) return ['Perfecto, eso es justo lo que vamos a preparar.'];
+        state.data.interes = AUDIT;
+        save();
+        return ['Perfecto, te ayudo con la Auditoría Operativa Inicial: en una semana analizamos cómo trabaja tu empresa y te entregamos un mapa claro de dónde se pierde capacidad.', 'Para que el equipo la prepare bien, te hago unas preguntas rápidas.'];
+      }
+    },
+    {
       re: /c[oó]mo est[aá]s|qu[eé] tal est[aá]s|qu[eé] tal (te va|todo|el d[ií]a)|c[oó]mo te va|c[oó]mo va todo/i,
       reply: ['Muy bien, gracias por preguntar.']
     },
@@ -312,12 +329,13 @@
       for (var i = 0; i < INTENTS.length; i++) {
         if (INTENTS[i].re.test(text)) {
           var isHow = INTENTS[i].reply === HOW_WE_WORK;
+          var intentReply = typeof INTENTS[i].reply === 'function' ? INTENTS[i].reply() : INTENTS[i].reply;
           // Si además cuenta su caso en el mismo mensaje, respondemos a la intención y seguimos con el caso.
           if (words(text) > 12 && (step === 'inicio' || step === 'problema')) {
-            await say(INTENTS[i].reply);
+            await say(intentReply);
             return onProblem(text);
           }
-          await say(INTENTS[i].reply);
+          await say(intentReply);
           if (step === 'inicio' || step === 'problema') {
             state.step = 'problema';
             return say([isHow ? 'Cuando quieras, cuéntame tu caso: ¿qué es lo que más tiempo os consume ahora mismo?' : QUESTIONS.problema]);
@@ -635,7 +653,7 @@
     var afterName = async function (before) {
       state.step = 'problema';
       save();
-      await say(before.concat(INTRO));
+      await say(before.concat(state.data.interes ? ['Para preparar la auditoría, empecemos por lo importante: ¿qué es lo que más tiempo os consume ahora mismo en el día a día?'] : INTRO));
       setQuick(['¿Cómo trabajáis?']);
     };
     var intro = introduction(text);
@@ -689,7 +707,7 @@
   function summary(before) {
     state.step = 'confirmar';
     var d = state.data;
-    var list = [['Situación', d.problema]];
+    var list = d.interes ? [['Solicita', d.interes], ['Situación', d.problema]] : [['Situación', d.problema]];
     if (d.detalle) list.push(['Detalle', d.detalle]);
     if (d.herramientas) list.push(['Herramientas', d.herramientas]);
     if (d.tiempo) list.push(['Tiempo dedicado', d.tiempo]);
@@ -722,7 +740,8 @@
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             access_key: CONFIG.web3formsKey,
-            subject: 'Nueva conversación con Fini: ' + d.nombre,
+            subject: (d.interes ? 'Solicitud de auditoría: ' : 'Nueva conversación con Fini: ') + d.nombre,
+            interes: d.interes || '',
             from_name: 'Fini · SKURX SYSTEMS',
             nombre: d.nombre,
             contacto: d.contacto,
@@ -812,10 +831,14 @@
     input.focus({ preventScroll: true });
   }
 
-  async function start() {
+  async function start(audit) {
     processing = true;
     state.step = 'saludo';
-    await say(GREETING);
+    if (audit) {
+      state.data.interes = AUDIT;
+      save();
+    }
+    await say(audit ? GREETING_AUDIT : GREETING);
     processing = false;
     if (pending.length) {
       var t = pending.join('\n');
@@ -878,6 +901,11 @@
   function open(event) {
     event.preventDefault();
     trigger = event.currentTarget;
+    var audit = trigger && trigger.getAttribute('data-fini-intent') === 'auditoria';
+    if (audit && state.history.length && !state.data.interes) {
+      state.data.interes = AUDIT;
+      save();
+    }
     scrollY = window.scrollY;
     document.documentElement.classList.add('panel-open');
     panel.showModal();
@@ -888,7 +916,7 @@
         else setQuick(state.quick || []);
       } else {
         isReturnVisit();
-        start();
+        start(audit);
       }
     }
     setTimeout(function () { input.focus({ preventScroll: true }); scrollDown(); }, reduceMotion ? 0 : 300);
