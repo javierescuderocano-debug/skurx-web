@@ -125,3 +125,4 @@ footer .footer-legal{margin-left:14px;color:#8e9391;text-decoration:none;text-tr
 @media(max-width:800px){.sector-hero{padding:70px 22px 64px;background-position:62% center}.pains,.sector-flowsec,.sector-audit{padding:64px 22px}.more-sectors{padding:0 22px 64px}.pain-grid{grid-template-columns:1fr}.pains h2,.sector-flowsec h2,.sector-audit h2{font-size:38px}.sector-flowsec .sector-flow li{grid-template-columns:84px 1fr}}
 footer .footer-legal{display:inline-block;white-space:nowrap}
 @media(max-width:800px){footer .footer-legal{display:block;margin:10px 0 0}footer .footer-legal .sep{display:none}}
+.sector-control{margin:0 0 48px}.sector-audit>.eyebrow{margin-bottom:6px}
