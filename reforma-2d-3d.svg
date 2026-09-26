@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Ilustración: plano en 2D de una cocina y la misma cocina terminada en 3D">
+<defs><linearGradient id="win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e3b3"/><stop offset="1" stop-color="#b8904c"/></linearGradient><radialGradient id="glow" cx=".62" cy=".32" r=".55"><stop offset="0" stop-color="#c8b98a" stop-opacity=".28"/><stop offset="1" stop-color="#c8b98a" stop-opacity="0"/></radialGradient></defs>
+<g fill="none" stroke="#d9cfb0" stroke-linecap="square">
+<path d="M46 70H166 M236 70H266V232H196 M146 232H46Z" stroke-width="6"/>
+<path d="M46 70V232" stroke-width="6"/>
+<path d="M166 67H236 M166 73H236" stroke-width="1.2"/>
+<path d="M146 232V182" stroke-width="1.5"/><path d="M146 182A50 50 0 0 1 196 232" stroke-width="1" stroke-dasharray="3 3"/>
+<path d="M49 73H263V100H76V212H49" stroke-width="1.4"/>
+<rect x="181" y="78" width="36" height="17" rx="3" stroke-width="1.1"/>
+<circle cx="108" cy="82" r="4" stroke-width="1"/>
+<circle cx="126" cy="82" r="4" stroke-width="1"/>
+<circle cx="108" cy="92" r="4" stroke-width="1"/>
+<circle cx="126" cy="92" r="4" stroke-width="1"/>
+<rect x="126" y="142" width="90" height="38" stroke="#c8b98a" stroke-width="1.6"/>
+</g>
+<g stroke="#c8b98a" stroke-width="1" fill="none"><path d="M46 48H266 M46 43V53 M266 43V53"/><path d="M288 70V232 M283 70H293 M283 232H293"/></g>
+<g fill="#c8b98a" font-family="Arial,Helvetica,sans-serif" font-size="11" letter-spacing=".04em"><text x="156.0" y="40" text-anchor="middle">4,20 m</text><text x="300" y="151.0" text-anchor="middle" transform="rotate(90 300 151.0)">3,10 m</text></g>
+<g stroke="#c8b98a" stroke-width="1.4" fill="none"><path d="M318 152H352 M344 145l8 7-8 7"/></g>
+<rect x="0" y="0" width="640" height="360" fill="url(#glow)"/>
+<polygon points="470.0,157.0 608.2,236.8 506.2,295.7 368.0,215.9" fill="#162024" stroke="#d9cfb0" stroke-width="1" stroke-linejoin="round"/>
+<line x1="493.0" y1="170.3" x2="391.0" y2="229.2" stroke="#26343a" stroke-width="1"/>
+<line x1="516.1" y1="183.6" x2="414.1" y2="242.5" stroke="#26343a" stroke-width="1"/>
+<line x1="539.1" y1="196.9" x2="437.1" y2="255.8" stroke="#26343a" stroke-width="1"/>
+<line x1="562.1" y1="210.2" x2="460.1" y2="269.1" stroke="#26343a" stroke-width="1"/>
+<line x1="585.2" y1="223.5" x2="483.2" y2="282.4" stroke="#26343a" stroke-width="1"/>
+<polygon points="470.0,157.0 608.2,236.8 608.2,141.8 470.0,62.0" fill="#223036" stroke="#d9cfb0" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="470.0,157.0 368.0,215.9 368.0,120.9 470.0,62.0" fill="#1b272c" stroke="#d9cfb0" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="542.4,155.1 591.8,183.6 591.8,145.6 542.4,117.1" fill="url(#win)"/>
+<line x1="567.1" y1="169.4" x2="567.1" y2="131.4" stroke="#223036" stroke-width="2"/>
+<polygon points="470.0,180.6 587.8,248.6 587.8,214.4 470.0,146.4" fill="#2c3a40" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="608.2,236.8 587.8,248.6 587.8,214.4 608.2,202.6" fill="#34444a" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="490.4,134.6 608.2,202.6 587.8,214.4 470.0,146.4" fill="#cbbd92" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="384.4,206.4 404.8,218.2 404.8,184.0 384.4,172.2" fill="#2c3a40" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="490.4,168.8 404.8,218.2 404.8,184.0 490.4,134.6" fill="#34444a" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="470.0,122.8 490.4,134.6 404.8,184.0 384.4,172.2" fill="#cbbd92" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="468.0,110.6 520.7,141.0 520.7,114.4 468.0,84.0" fill="#2f3d43" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="532.5,134.2 520.7,141.0 520.7,114.4 532.5,107.6" fill="#3a4a50" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="479.9,77.2 532.5,107.6 520.7,114.4 468.0,84.0" fill="#3b4b51" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="442.0,230.2 498.0,262.5 498.0,226.4 442.0,194.1" fill="#3a3226" stroke="#c8b98a" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="524.3,247.2 498.0,262.5 498.0,226.4 524.3,211.2" fill="#4a3f2e" stroke="#c8b98a" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="468.4,178.8 524.3,211.2 498.0,226.4 442.0,194.1" fill="#c8b98a" stroke="#c8b98a" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="438.7,247.2 448.6,252.9 448.6,229.4 438.7,223.7" fill="#2a3439" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="458.5,247.2 448.6,252.9 448.6,229.4 458.5,223.7" fill="#323e44" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="448.6,218.0 458.5,223.7 448.6,229.4 438.7,223.7" fill="#d9cfb0" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="461.8,260.6 471.6,266.2 471.6,242.7 461.8,237.0" fill="#2a3439" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="481.5,260.5 471.6,266.2 471.6,242.7 481.5,237.0" fill="#323e44" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<polygon points="471.6,231.3 481.5,237.0 471.6,242.7 461.8,237.0" fill="#d9cfb0" stroke="#d9cfb0" stroke-width="0.8" stroke-linejoin="round"/>
+<line x1="470.0" y1="136.1" x2="470.0" y2="164.6" stroke="#d9cfb0" stroke-width="1"/>
+<circle cx="470.0" cy="164.6" r="5" fill="#f3e3b3"/>
+<line x1="496.3" y1="151.3" x2="496.3" y2="179.8" stroke="#d9cfb0" stroke-width="1"/>
+<circle cx="496.3" cy="179.8" r="5" fill="#f3e3b3"/>
+<g fill="#c8b98a" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".18em"><text x="156.0" y="320" text-anchor="middle">PLANO 2D</text><text x="490" y="320" text-anchor="middle">RENDER 3D</text></g>
+</svg>
