@@ -144,7 +144,7 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 .sf-art figcaption{margin-top:10px;color:#8b8c88;font-size:12px}
 @media(max-width:800px){.sector-feature{padding:64px 22px;grid-template-columns:1fr;gap:34px}.sector-feature h2{font-size:38px}.sector-feature h2 br{display:none}}
 /* Antes y después */
-.ba-frame{position:relative;border-radius:10px;overflow:hidden;background:var(--ink);aspect-ratio:640/400;touch-action:pan-y}
+.ba-frame{position:relative;border-radius:10px;overflow:hidden;background:var(--ink);aspect-ratio:1586/992;touch-action:pan-y}
 .sf-art .ba-frame img{position:absolute;inset:0;width:100%;height:100%;border-radius:0}
 .ba-after{position:absolute;inset:0;clip-path:inset(0 0 0 var(--pos))}
 .ba-handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;margin-left:-1px;background:var(--gold);pointer-events:none}
