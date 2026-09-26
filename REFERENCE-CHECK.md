@@ -1,1 +1,1 @@
-Checklist: claim único bajo logo; sin texto dentro del hero SVG; ilustración de convergencia desarrollada en SVG; tarjetas visuales coherentes; sin inmobiliarias; sin precios.
+Checklist: marca SKURX SYSTEMS; claim único bajo logo; solo acento dorado (sin azul); sin texto dentro del hero; ilustración SVG propia; sectores como escenarios ilustrativos; sin precios; sin cifras ni clientes inventados.

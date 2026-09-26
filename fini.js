@@ -229,7 +229,7 @@
     },
     {
       re: /\b(eres|sois|es esto) (un |una )?(bot|robot|m[aá]quina|ia|inteligencia|humana?|persona|real)|hablo con (un|una) (bot|m[aá]quina|persona)/i,
-      reply: ['Soy una asistente virtual: respondo de forma automática. Todo lo que me cuentes lo revisa después una persona del equipo de SKURX.']
+      reply: ['Soy una asistente virtual: respondo de forma automática. Todo lo que me cuentes lo revisa después una persona del equipo de SKURX SYSTEMS.']
     },
     {
       re: /precio|tarifa|coste|cu[aá]nto (cuesta|cobr|vale|sale|costar)|es caro|barato/i,
