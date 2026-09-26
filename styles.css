@@ -92,3 +92,12 @@ footer{display:block}footer p{margin:0}
 footer p,footer p:last-child{text-align:left}
 
 .process h2 em{font-style:normal;color:var(--gold-large)}
+
+/* Página legal (privacidad) */
+.legal{max-width:760px;margin:0 auto;padding:90px 30px 110px;color:var(--text)}.legal h1{margin:0 0 10px;font-size:clamp(40px,5vw,58px);font-weight:300;letter-spacing:-.045em;line-height:1}.legal-date{margin:0 0 48px;color:var(--muted);font-size:14px}
+.legal h2{margin:44px 0 12px;font-size:21px;font-weight:600;letter-spacing:-.01em}.legal p,.legal li{color:#3f403d;font-size:16px;line-height:1.65}.legal ul{padding-left:20px}.legal li{margin:6px 0}.legal a{color:var(--gold-text)}
+@media(max-width:800px){.legal{padding:60px 22px 80px}}
+/* 404: mantener su diseño original, sin la foto del cierre */
+.contact.not-found{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:90px 22px;background:var(--ink)}.contact.not-found:before{content:none}.contact.not-found h2{font-size:clamp(40px,5vw,55px)}.contact.not-found>p:not(.eyebrow){margin:25px auto;color:#c9cbc7}.contact.not-found a{padding-bottom:5px;border-bottom:1px solid var(--gold);text-decoration:none}
+/* Pie con enlace a privacidad */
+footer .footer-legal{margin-left:14px;color:#8e9391;text-decoration:none;text-transform:uppercase;letter-spacing:.1em}footer .footer-legal:hover,footer .footer-legal:focus-visible{color:var(--gold)}
