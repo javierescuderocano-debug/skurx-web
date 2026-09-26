@@ -155,3 +155,5 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 .ba-tag-a{left:14px}.ba-tag-d{right:14px}
 .ba-tag{transition:opacity .25s ease}
 .ba-solo-antes .ba-tag-d,.ba-solo-despues .ba-tag-a{opacity:0}
+/* Sectores: bloque de problemas en tono arena, como la franja de servicios */
+.pains{background:var(--sand)}.pain-grid{background:#d4cdbd}.pain{background:var(--ivory)}
