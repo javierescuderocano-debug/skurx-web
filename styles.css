@@ -101,3 +101,25 @@ footer p,footer p:last-child{text-align:left}
 .contact.not-found{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:90px 22px;background:var(--ink)}.contact.not-found:before{content:none}.contact.not-found h2{font-size:clamp(40px,5vw,55px)}.contact.not-found>p:not(.eyebrow){margin:25px auto;color:#c9cbc7}.contact.not-found a{padding-bottom:5px;border-bottom:1px solid var(--gold);text-decoration:none}
 /* Pie con enlace a privacidad */
 footer .footer-legal{margin-left:14px;color:#8e9391;text-decoration:none;text-transform:uppercase;letter-spacing:.1em}footer .footer-legal:hover,footer .footer-legal:focus-visible{color:var(--gold)}
+
+/* Índice de sectores (bajo las tarjetas) */
+.sector-index{margin-top:46px;padding-top:30px;border-top:1px solid rgba(200,185,138,.35)}.sector-index .eyebrow{margin-bottom:18px;color:var(--gold)}
+.sector-index ul{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0;padding:0;list-style:none}
+.sector-index a{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 20px;border:1px solid rgba(255,255,255,.14);border-radius:9px;color:#f3f1ec;text-decoration:none;font-size:15px;transition:border-color .2s ease,background .2s ease}
+.sector-index a span{color:var(--gold);transition:transform .2s ease}.sector-index a:hover,.sector-index a:focus-visible{border-color:rgba(200,185,138,.7);background:rgba(200,185,138,.06)}.sector-index a:hover span{transform:translateX(3px)}
+@media(max-width:800px){.sector-index ul{grid-template-columns:1fr}}
+
+/* Páginas de sector */
+.sector-hero{position:relative;padding:110px max(44px,calc((100vw - var(--max))/2)) 100px;background:linear-gradient(90deg,rgba(7,16,18,.97) 0%,rgba(7,16,18,.85) 40%,rgba(7,16,18,.35) 100%),url('hero-bg.webp') right center/cover no-repeat,var(--ink);color:#f5f2ec}
+.sector-hero .crumb{margin:0 0 26px;font-size:12px;letter-spacing:.14em}.sector-hero .crumb a{color:var(--gold);text-decoration:none}
+.sector-hero h1{max-width:760px;margin:0 0 26px;font-size:clamp(44px,4.6vw,70px);font-weight:300;line-height:.98;letter-spacing:-.05em}.sector-hero p.lead{max-width:600px;margin:0 0 34px;color:#e1e2df;font-size:18px}
+.pains{padding:90px max(44px,calc((100vw - var(--max))/2))}.pains h2,.sector-flowsec h2,.sector-audit h2{margin:0;font-size:46px;font-weight:300;letter-spacing:-.045em;line-height:1}
+.pain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:48px;background:#d4d1c9}.pain{padding:34px 34px 36px;background:var(--ivory)}
+.pain small{color:var(--gold-text);font-weight:700;letter-spacing:.15em}.pain h3{margin:14px 0 10px;font-size:20px;font-weight:600;letter-spacing:-.01em}.pain p{margin:0;color:#62635f}
+.pain .fix{margin-top:18px;padding-top:16px;border-top:1px solid #d4d1c9}.pain .fix b{display:block;margin-bottom:6px;color:var(--gold-text);font-size:11px;letter-spacing:.16em;font-weight:700}.pain .fix p{color:#2c2d2a}
+.sector-flowsec{padding:90px max(44px,calc((100vw - var(--max))/2));background:var(--ink);color:#f3f1ec}.sector-flowsec .note{margin:14px 0 0;color:#c9cbc8}
+.sector-flowsec .sector-flow{max-width:860px;margin-top:40px}.sector-flowsec .sector-flow li{grid-template-columns:110px 1fr;font-size:16px;padding:16px 0}
+.sector-audit{padding:90px max(44px,calc((100vw - var(--max))/2))}.sector-audit .process-audit{margin-top:0}
+.more-sectors{padding:0 max(44px,calc((100vw - var(--max))/2)) 90px}.more-sectors .sector-index{margin-top:0;border-top-color:#d4d1c9}.more-sectors .eyebrow{color:#5f605d}
+.more-sectors .sector-index a{border-color:#d3d0c8;color:var(--text)}.more-sectors .sector-index a[aria-current]{border-color:var(--gold);background:rgba(200,185,138,.12)}
+@media(max-width:800px){.sector-hero{padding:70px 22px 64px;background-position:62% center}.pains,.sector-flowsec,.sector-audit{padding:64px 22px}.more-sectors{padding:0 22px 64px}.pain-grid{grid-template-columns:1fr}.pains h2,.sector-flowsec h2,.sector-audit h2{font-size:38px}.sector-flowsec .sector-flow li{grid-template-columns:84px 1fr}}
