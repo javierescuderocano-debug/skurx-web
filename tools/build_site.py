@@ -13,7 +13,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 SITE = 'https://skurx.es'
-LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar', 'sr', 'pl']                      # idiomas además del español
+LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar', 'sr', 'pl']   # idiomas generados además del español
+VISIBLE = ['en', 'ca', 'fr', 'de', 'nl']   # los que aparecen en el desplegable, en hreflang y en el sitemap
+# El resto se publica igualmente en su carpeta (p. ej. /sr/) pero oculto: fuera del desplegable, sin hreflang,
+# fuera del sitemap y con noindex. Si les falta algún texto nuevo, se usa el inglés en vez de detener la generación.
 
 from sectores_data import S as S_ES
 SECTOR_UI_ES = {
@@ -53,7 +56,7 @@ def switcher(label, es_href, others, current):
 
 def alternates(urls):
     """urls: {código: url absoluta}"""
-    out = ''.join('<link rel="alternate" hreflang="%s" href="%s">' % (c, u) for c, u in urls.items())
+    out = ''.join('<link rel="alternate" hreflang="%s" href="%s">' % (c, u) for c, u in urls.items() if c == 'es' or c in VISIBLE)
     return out + '<link rel="alternate" hreflang="x-default" href="%s">' % urls['es']
 
 
@@ -171,6 +174,11 @@ def sector_dir(lang):
 
 # ------------------------------------------------------------------ construcción
 LANG_MOD = {l: importlib.import_module('i18n_' + l) for l in LANGS}
+for _l in LANGS:
+    if _l not in VISIBLE:
+        for _v in ('COMMON', 'HOME', 'PRIVACY_TEXT', 'SECTOR_UI', 'SVG'):
+            for _k, _t in getattr(LANG_MOD['en'], _v).items():
+                getattr(LANG_MOD[_l], _v).setdefault(_k, _t)
 DATA = {l: importlib.import_module('sectores_data_' + l).S for l in LANGS}
 by_es = {l: {s['es_slug']: s for s in DATA[l]} for l in LANGS}
 
@@ -191,10 +199,10 @@ for l in LANGS:
 
 # 1. Portada y privacidad en español: selector de idioma y alternates
 idx = open('index.html').read()
-idx = set_switcher(idx, switcher('Idioma', 'index.html', [(l, '%s/index.html' % LANG_MOD[l].DIR) for l in LANGS], 'es'))
+idx = set_switcher(idx, switcher('Idioma', 'index.html', [(l, '%s/index.html' % LANG_MOD[l].DIR) for l in VISIBLE], 'es'))
 idx = set_alternates(idx, home_urls)
 priv = open('privacidad.html').read()
-priv = set_switcher(priv, switcher('Idioma', 'privacidad.html', [(l, '%s/%s' % (LANG_MOD[l].DIR, LANG_MOD[l].PRIVACY)) for l in LANGS], 'es'))
+priv = set_switcher(priv, switcher('Idioma', 'privacidad.html', [(l, '%s/%s' % (LANG_MOD[l].DIR, LANG_MOD[l].PRIVACY)) for l in VISIBLE], 'es'))
 priv = set_alternates(priv, priv_urls)
 
 # «Más sectores» de la portada desde los datos
@@ -237,7 +245,7 @@ UI_ES = dict(SECTOR_UI_ES, labels=dict(skip='Saltar al contenido', home_aria='SK
 
 
 def sw_es(s):
-    return switcher('Idioma', '%s.html' % s['slug'], [(l, '../%s/%s/%s.html' % (LANG_MOD[l].DIR, LANG_MOD[l].SECTORS_DIR, by_es[l][s['slug']]['slug'])) for l in LANGS], 'es')
+    return switcher('Idioma', '%s.html' % s['slug'], [(l, '../%s/%s/%s.html' % (LANG_MOD[l].DIR, LANG_MOD[l].SECTORS_DIR, by_es[l][s['slug']]['slug'])) for l in VISIBLE], 'es')
 
 
 sector_pages('es', S_ES, UI_ES, CONTROL_ES, '../', close_es, dialog_es, head0, sw_es, lambda s: sector_urls(s['slug']), None, None, '../privacidad.html', True)
@@ -273,7 +281,7 @@ for l in LANGS:
     p = p.replace('srcset="capacity-funnel-mobile.svg"', 'srcset="capacity-funnel-mobile-%s.svg"' % l).replace('src="capacity-funnel.svg"', 'src="capacity-funnel-%s.svg"' % l)
     p = p.replace('href="/privacidad.html"', 'href="%s"' % M.PRIVACY)
     p = re.sub(r'href="sectores/([a-z-]+)\.html"', lambda m: 'href="%s/%s.html"' % (M.SECTORS_DIR, by_es[l][m.group(1)]['slug']), p)
-    p = set_switcher(p, switcher(M.COMMON['Idioma'], '../index.html', [(x, ('index.html' if x == l else '../%s/index.html' % LANG_MOD[x].DIR)) for x in LANGS], l))
+    p = set_switcher(p, switcher(M.COMMON['Idioma'], '../index.html', [(x, ('index.html' if x == l else '../%s/index.html' % LANG_MOD[x].DIR)) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l))
     p = translate(p, T, 'portada ' + l)
     open(os.path.join(M.DIR, 'index.html'), 'w').write(p)
     home_l = p
@@ -292,7 +300,7 @@ for l in LANGS:
     q = re.sub(r'<link rel="canonical" href="[^"]*">', '<link rel="canonical" href="%s">' % priv_urls[l], q)
     q = re.sub(r'<meta property="og:url" content="[^"]*">', '<meta property="og:url" content="%s">' % priv_urls[l], q)
     q = q.replace('href="/"', 'href="index.html"').replace('href="index.html" aria-label', 'href="index.html" aria-label')
-    q = set_switcher(q, switcher(M.COMMON['Idioma'], '../privacidad.html', [(x, M.PRIVACY if x == l else '../%s/%s' % (LANG_MOD[x].DIR, LANG_MOD[x].PRIVACY)) for x in LANGS], l))
+    q = set_switcher(q, switcher(M.COMMON['Idioma'], '../privacidad.html', [(x, M.PRIVACY if x == l else '../%s/%s' % (LANG_MOD[x].DIR, LANG_MOD[x].PRIVACY)) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l))
     q = translate(q, dict(M.COMMON, **M.PRIVACY_TEXT), 'privacidad ' + l)
     open(os.path.join(M.DIR, M.PRIVACY), 'w').write(q)
 
@@ -309,16 +317,28 @@ for l in LANGS:
     CONTROL = [(M.HOME[a], M.HOME[b]) for a, b in CONTROL_ES]
 
     def sw_l(s, l=l, M=M):
-        return switcher(M.COMMON['Idioma'], '../../sectores/%s.html' % s['es_slug'], [(x, ('%s.html' % s['slug']) if x == l else '../../%s/%s/%s.html' % (LANG_MOD[x].DIR, LANG_MOD[x].SECTORS_DIR, by_es[x][s['es_slug']]['slug'])) for x in LANGS], l)
+        return switcher(M.COMMON['Idioma'], '../../sectores/%s.html' % s['es_slug'], [(x, ('%s.html' % s['slug']) if x == l else '../../%s/%s/%s.html' % (LANG_MOD[x].DIR, LANG_MOD[x].SECTORS_DIR, by_es[x][s['es_slug']]['slug'])) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l)
 
     sector_pages(l, DATA[l], UI, CONTROL, '../../', close_l, '', h0, sw_l, lambda s: sector_urls(s['es_slug']), M.CONTACT_TALK, M.CONTACT_AUDIT, '../' + M.PRIVACY, False)
 
-# 4. sitemap
-urls = [home_urls['es'], priv_urls['es']] + ['%s/sectores/%s.html' % (SITE, s['slug']) for s in S_ES]
+# 4. idiomas ocultos: noindex y sin alternates
+import glob
 for l in LANGS:
+    if l in VISIBLE:
+        continue
+    for f in glob.glob(os.path.join(LANG_MOD[l].DIR, '**', '*.html'), recursive=True):
+        pg = open(f).read()
+        pg = re.sub(r'<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', pg)
+        if 'name="robots"' not in pg:
+            pg = pg.replace('<head>', '<head><meta name="robots" content="noindex">', 1)
+        open(f, 'w').write(pg)
+
+# 5. sitemap
+urls = [home_urls['es'], priv_urls['es']] + ['%s/sectores/%s.html' % (SITE, s['slug']) for s in S_ES]
+for l in VISIBLE:
     urls += [home_urls[l], priv_urls[l]] + [sector_urls(s['slug'])[l] for s in S_ES]
 import datetime
 today = datetime.date.today().isoformat()
 open('sitemap.xml', 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
                                ''.join('  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (u, today) for u in urls) + '</urlset>\n')
-print('OK: español + %s · %d páginas de sector por idioma · sitemap con %d URLs' % (', '.join(LANGS), len(S_ES), len(urls)))
+print('OK: español + %s (visibles) + %s (ocultos) · sitemap con %d URLs' % (', '.join(VISIBLE), ', '.join(l for l in LANGS if l not in VISIBLE), len(urls)))
