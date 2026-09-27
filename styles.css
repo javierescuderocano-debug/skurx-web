@@ -176,3 +176,20 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 .site-header .lang-menu a:after{display:none}
 .site-header nav.lang-switch{display:block}
 @media(max-width:800px){.site-header nav.lang-switch{display:block}}
+/* Idiomas: chino, árabe (RTL) y ruso/ucraniano */
+:lang(zh) body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",Arial,sans-serif}
+:lang(ar) body{font-family:"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif}
+:lang(zh) h1,:lang(zh) h2,:lang(zh) h3,:lang(ar) h1,:lang(ar) h2,:lang(ar) h3{letter-spacing:0}
+:lang(zh) .eyebrow,:lang(ar) .eyebrow,:lang(ar) .brand-tagline{letter-spacing:.04em}
+:lang(ar) h1,:lang(ar) h2{line-height:1.25}
+:lang(zh) h1,:lang(zh) h2{line-height:1.15}
+[dir=rtl] .contact-arrow,[dir=rtl] .gold-link span,[dir=rtl] .scene-card i,[dir=rtl] .sector-index a span{display:inline-block;transform:scaleX(-1)}
+[dir=rtl] .site-header .lang-menu ul{right:auto;left:0}
+[dir=rtl] .brand-lockup,[dir=rtl] .ba-frame{direction:ltr}
+[dir=rtl] .ba-frame input{direction:ltr}
+[dir=rtl] .hero-strip span{padding:18px 34px 18px 14px}
+[dir=rtl] .hero-strip span:before{left:auto;right:16px}
+@media(max-width:800px){[dir=rtl] .hero-strip span{padding:16px 32px 16px 12px}[dir=rtl] .hero-strip span:before{right:14px}.header-contact{white-space:nowrap;padding:10px 13px}}
+@media(max-width:420px){.site-header{padding-left:16px;padding-right:16px}.brand-name strong,.brand-name span{font-size:18px}.header-actions{gap:8px}.lang-menu summary{padding:8px 9px}.header-contact{font-size:11px;padding:9px 11px}.contact-arrow{margin-left:5px}}
+h1,h2,h3,p,li,a,span{overflow-wrap:break-word}
+:lang(de) h1,:lang(de) h2,:lang(de) h3,:lang(de) p,:lang(nl) h1,:lang(nl) h2,:lang(ru) h1,:lang(ru) h2,:lang(ru) p,:lang(uk) h1,:lang(uk) h2,:lang(uk) p{-webkit-hyphens:auto;hyphens:auto}

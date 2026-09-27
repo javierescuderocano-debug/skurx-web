@@ -6,6 +6,8 @@ LOCALE = 'en_GB'
 DIR = 'en'                      # carpeta donde se publica
 SECTORS_DIR = 'sectors'         # carpeta de las páginas de sector dentro de DIR
 PRIVACY = 'privacy.html'
+RTL = False                     # True solo para idiomas de derecha a izquierda (árabe)
+JSONLD = {'country': 'Spain', 'knows': ['Resource Automation', 'Process automation', 'Applied artificial intelligence', 'Tool integration']}
 
 # Contacto mientras Fini no esté disponible en este idioma
 CONTACT_TALK = "mailto:info@skurx.es?subject=Let%27s%20talk%20-%20SKURX%20SYSTEMS"
