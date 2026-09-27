@@ -32,3 +32,11 @@ Cada cambio queda guardado en el historial (pestaña *Commits*), así que siempr
 ## Si cambias `styles.css` o `fini.js`
 
 En `index.html` (y en `privacidad.html` y `404.html` para los estilos) esos archivos se cargan con una versión, por ejemplo `fini.js?v=20260926b`. Cuando los modifiques, cambia ese número (por ejemplo, a la fecha del día). Así los navegadores descargan la versión nueva al momento en vez de usar la que tenían guardada.
+
+## Idiomas
+
+- El español es la fuente: `index.html` y `privacidad.html` se editan a mano; el contenido de las 12 páginas de sector está en `tools/sectores_data.py`.
+- Cada idioma adicional tiene sus textos en `tools/i18n_<código>.py` y sus sectores en `tools/sectores_data_<código>.py`, y se publica en su carpeta (`/en/`).
+- Después de cualquier cambio de textos, ejecuta `python3 tools/build_site.py`. Regenera las páginas de sector, las versiones en otros idiomas, el selector de idioma, las etiquetas `hreflang` y el `sitemap.xml`. Si algún texto en español queda sin traducir, el script se detiene y dice cuál.
+- Para añadir un idioma: copia `i18n_en.py` y `sectores_data_en.py` con el nuevo código, traduce los valores y añade el código a `LANGS` en `tools/build_site.py`.
+- Fini de momento solo está en español; en las páginas de otros idiomas, "Hablemos" y "Solicitar auditoría" abren un correo a info@skurx.es.

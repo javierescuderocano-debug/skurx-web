@@ -157,3 +157,22 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 .ba-solo-antes .ba-tag-d,.ba-solo-despues .ba-tag-a{opacity:0}
 /* Sectores: bloque de problemas en tono arena, como la franja de servicios */
 .pains{background:var(--sand)}.pain-grid{background:#d4cdbd}.pain{background:var(--ivory)}
+/* Selector de idioma (desplegable) */
+.header-actions{justify-self:end;display:flex;align-items:center;gap:18px}
+.lang-switch{position:relative}
+.lang-menu summary{display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(200,185,138,.45);border-radius:999px;color:#f7f4ed;font-size:12px;font-weight:600;letter-spacing:.08em;cursor:pointer;list-style:none;transition:border-color .2s ease}
+.lang-menu summary::-webkit-details-marker{display:none}
+.lang-menu summary:after{content:"";width:6px;height:6px;margin:-3px 0 0 2px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(45deg);transition:transform .2s ease}
+.lang-menu[open] summary:after{transform:rotate(-135deg);margin-top:3px}
+.lang-menu summary:hover,.lang-menu[open] summary{border-color:var(--gold)}
+.lang-menu summary svg{width:15px;height:15px;fill:none;stroke:var(--gold);stroke-width:1.4}
+.lang-menu ul{position:absolute;right:0;top:calc(100% + 10px);z-index:60;min-width:190px;margin:0;padding:6px;list-style:none;background:#0d1618;border:1px solid rgba(200,185,138,.35);border-radius:10px;box-shadow:0 14px 32px rgba(0,0,0,.35)}
+.site-header .lang-menu a{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 12px;border-radius:7px;color:#e8e6e0;text-decoration:none;font-size:14px}
+.site-header .lang-menu a b{color:#8e9391;font-size:11px;letter-spacing:.1em;font-weight:600}
+.site-header .lang-menu a:hover,.site-header .lang-menu a:focus-visible{background:rgba(200,185,138,.12);color:#fff}
+.site-header .lang-menu a[aria-current]{color:var(--gold)}
+.site-header .lang-menu a[aria-current] b{color:var(--gold)}
+@media(max-width:800px){.header-actions{gap:10px}.lang-menu summary{padding:8px 10px;font-size:11px}.lang-menu summary svg{display:none}}
+.site-header .lang-menu a:after{display:none}
+.site-header nav.lang-switch{display:block}
+@media(max-width:800px){.site-header nav.lang-switch{display:block}}
