@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 SITE = 'https://skurx.es'
-LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar']                      # idiomas además del español
+LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar', 'sr']                      # idiomas además del español
 
 from sectores_data import S as S_ES
 SECTOR_UI_ES = {
@@ -36,7 +36,7 @@ CONTROL_ES = [('Documentado', 'Cada flujo explicado en lenguaje claro.'), ('A no
 
 # ------------------------------------------------------------------ utilidades
 LANG_NAMES = {'es': 'Español', 'en': 'English', 'ca': 'Català', 'fr': 'Français', 'de': 'Deutsch', 'nl': 'Nederlands', 'it': 'Italiano',
-              'pt': 'Português', 'uk': 'Українська', 'ru': 'Русский', 'zh': '中文', 'ar': 'العربية'}
+              'pt': 'Português', 'uk': 'Українська', 'ru': 'Русский', 'zh': '中文', 'ar': 'العربية', 'sr': 'Srpski'}
 GLOBE = ('<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9'
          'M12 3c-2.5 2.6-3.8 5.6-3.8 9s1.3 6.4 3.8 9"/></svg>')
 
