@@ -15,6 +15,8 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=Operationele%20Startaudit%20-%20SK
 
 # ---------------------------------------------------------------- Comunes
 COMMON = {
+    'Volver a la página principal': 'Terug naar de homepage',
+    'Volver arriba': 'Terug naar boven',
     'Saltar al contenido': 'Naar de inhoud',
     'CAPACIDAD LIBERADA': 'VRIJGEMAAKTE CAPACITEIT',
     'Quiénes somos': 'Over ons',
