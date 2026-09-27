@@ -15,6 +15,8 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=Auditoria%20Operativa%20Inicial%20
 
 # ---------------------------------------------------------------- Comuns
 COMMON = {
+    'Volver a la página principal': 'Tornar a la pàgina principal',
+    'Volver arriba': 'Tornar a dalt',
     'Saltar al contenido': 'Salta al contingut',
     'CAPACIDAD LIBERADA': 'CAPACITAT ALLIBERADA',
     'Quiénes somos': 'Qui som',

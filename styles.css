@@ -193,3 +193,16 @@ footer .footer-legal{display:inline-block;white-space:nowrap}
 @media(max-width:420px){.site-header{padding-left:16px;padding-right:16px}.brand-name strong,.brand-name span{font-size:18px}.header-actions{gap:8px}.lang-menu summary{padding:8px 9px}.header-contact{font-size:11px;padding:9px 11px}.contact-arrow{margin-left:5px}}
 h1,h2,h3,p,li,a,span{overflow-wrap:break-word}
 :lang(de) h1,:lang(de) h2,:lang(de) h3,:lang(de) p,:lang(nl) h1,:lang(nl) h2,:lang(ru) h1,:lang(ru) h2,:lang(ru) p,:lang(uk) h1,:lang(uk) h2,:lang(uk) p{-webkit-hyphens:auto;hyphens:auto}
+/* Botón volver al final de cada página */
+.back-home{padding:34px max(44px,calc((100vw - var(--max))/2));background:var(--ink);border-top:1px solid rgba(255,255,255,.08);text-align:center}
+.back-home a{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border:1px solid var(--gold);border-radius:999px;color:#f7f4ed;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.04em;transition:background .22s ease,color .22s ease}
+.back-home a span{color:var(--gold);transition:color .22s ease}
+.back-home a:hover,.back-home a:focus-visible{background:var(--gold);color:var(--ink)}
+.back-home a:hover span,.back-home a:focus-visible span{color:var(--ink)}
+.legal ~ .back-home,main.legal .back-home{background:transparent}
+[dir=rtl] .back-home a span{display:inline-block;transform:scaleX(-1)}
+[dir=rtl] .back-home a[href="#inicio"] span{transform:none}
+@media(max-width:800px){.back-home{padding:28px 22px}}
+main.legal .back-home{margin-top:40px;padding-left:0;padding-right:0;border-top:1px solid #d4d1c9;text-align:left}
+main.legal .back-home a{color:var(--text)}
+[dir=rtl] main.legal .back-home{text-align:right}
