@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 SITE = 'https://skurx.es'
-LANGS = ['en']                      # idiomas además del español
+LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar']                      # idiomas además del español
 
 from sectores_data import S as S_ES
 SECTOR_UI_ES = {
@@ -35,7 +35,8 @@ CONTROL_ES = [('Documentado', 'Cada flujo explicado en lenguaje claro.'), ('A no
 
 
 # ------------------------------------------------------------------ utilidades
-LANG_NAMES = {'es': 'Español', 'en': 'English', 'fr': 'Français', 'de': 'Deutsch', 'ca': 'Català', 'it': 'Italiano', 'pt': 'Português'}
+LANG_NAMES = {'es': 'Español', 'en': 'English', 'ca': 'Català', 'fr': 'Français', 'de': 'Deutsch', 'nl': 'Nederlands', 'it': 'Italiano',
+              'pt': 'Português', 'uk': 'Українська', 'ru': 'Русский', 'zh': '中文', 'ar': 'العربية'}
 GLOBE = ('<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9'
          'M12 3c-2.5 2.6-3.8 5.6-3.8 9s1.3 6.4 3.8 9"/></svg>')
 
@@ -234,11 +235,11 @@ for l in LANGS:
 
     # --- portada
     p = idx
-    p = p.replace('<html lang="es">', '<html lang="%s">' % l)
+    p = p.replace('<html lang="es">', '<html lang="%s"%s>' % (l, ' dir="rtl"' if getattr(M, 'RTL', False) else ''))
     p = re.sub(r'<script type="application/ld\+json">.*?</script>', lambda m: m.group(0).replace(
         'SKURX SYSTEMS libera la capacidad que las empresas pierden en trabajo manual con automatización, conexión de herramientas e IA aplicada. Para empresas de toda España.',
         T['SKURX SYSTEMS libera la capacidad que las empresas pierden en trabajo manual con automatización, conexión de herramientas e IA aplicada. Para empresas de toda España.'])
-        .replace('"url":"https://skurx.es/"', '"url":"%s"' % home_urls[l]).replace('"España"', '"Spain"').replace('Automatización de Recursos", "Automatización de procesos", "Inteligencia artificial aplicada", "Integración de herramientas', 'Resource Automation", "Process automation", "Applied artificial intelligence", "Tool integration'), p, flags=re.S)
+        .replace('"url":"https://skurx.es/"', '"url":"%s"' % home_urls[l]).replace('"España"', '"%s"' % M.JSONLD['country']).replace('"Automatización de Recursos","Automatización de procesos","Inteligencia artificial aplicada","Integración de herramientas"', ','.join('"%s"' % k for k in M.JSONLD['knows'])), p, flags=re.S)
     p = p.replace('<meta property="og:locale" content="es_ES">', '<meta property="og:locale" content="%s">' % M.LOCALE)
     p = re.sub(r'<link rel="canonical" href="[^"]*">', '<link rel="canonical" href="%s">' % home_urls[l], p)
     p = re.sub(r'<meta property="og:url" content="[^"]*">', '<meta property="og:url" content="%s">' % home_urls[l], p)
@@ -266,7 +267,7 @@ for l in LANGS:
         open(os.path.join(M.DIR, src.replace('.svg', '-%s.svg' % l)), 'w').write(svg)
 
     # --- privacidad
-    q = priv.replace('<html lang="es">', '<html lang="%s">' % l)
+    q = priv.replace('<html lang="es">', '<html lang="%s"%s>' % (l, ' dir="rtl"' if getattr(M, 'RTL', False) else ''))
     for a in ['favicon.svg', 'favicon-32.png', 'apple-touch-icon.png']:
         q = q.replace('href="%s"' % a, 'href="../%s"' % a).replace('href="/%s"' % a, 'href="../%s"' % a)
     q = q.replace('href="styles.css?', 'href="../styles.css?').replace('href="/styles.css?', 'href="../styles.css?')

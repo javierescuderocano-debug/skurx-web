@@ -36,7 +36,7 @@ En `index.html` (y en `privacidad.html` y `404.html` para los estilos) esos arch
 ## Idiomas
 
 - El español es la fuente: `index.html` y `privacidad.html` se editan a mano; el contenido de las 12 páginas de sector está en `tools/sectores_data.py`.
-- Cada idioma adicional tiene sus textos en `tools/i18n_<código>.py` y sus sectores en `tools/sectores_data_<código>.py`, y se publica en su carpeta (`/en/`).
+- Cada idioma adicional tiene sus textos en `tools/i18n_<código>.py` y sus sectores en `tools/sectores_data_<código>.py`, y se publica en su carpeta (`/en/`, `/ca/`, `/fr/`, `/de/`, `/nl/`, `/it/`, `/pt/`, `/uk/`, `/ru/`, `/zh/`, `/ar/`). El árabe se muestra de derecha a izquierda (`RTL = True`).
 - Después de cualquier cambio de textos, ejecuta `python3 tools/build_site.py`. Regenera las páginas de sector, las versiones en otros idiomas, el selector de idioma, las etiquetas `hreflang` y el `sitemap.xml`. Si algún texto en español queda sin traducir, el script se detiene y dice cuál.
 - Para añadir un idioma: copia `i18n_en.py` y `sectores_data_en.py` con el nuevo código, traduce los valores y añade el código a `LANGS` en `tools/build_site.py`.
 - Fini de momento solo está en español; en las páginas de otros idiomas, "Hablemos" y "Solicitar auditoría" abren un correo a info@skurx.es.
