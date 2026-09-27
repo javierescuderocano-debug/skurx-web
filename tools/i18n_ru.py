@@ -15,6 +15,7 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=%D0%9F%D0%B5%D1%80%D0%B2%D0%B8%D1%
 
 # ---------------------------------------------------------------- Comunes
 COMMON = {
+    'Siguiente sección': 'Следующий раздел',
     'Volver a la página principal': 'Вернуться на главную',
     'Volver arriba': 'Наверх',
     'Saltar al contenido': 'Перейти к содержанию',

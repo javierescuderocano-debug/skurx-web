@@ -15,6 +15,7 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=Operative%20Erstanalyse%20-%20SKUR
 
 # ---------------------------------------------------------------- Comunes
 COMMON = {
+    'Siguiente sección': 'Nächster Abschnitt',
     'Volver a la página principal': 'Zurück zur Startseite',
     'Volver arriba': 'Nach oben',
     'Saltar al contenido': 'Zum Inhalt springen',

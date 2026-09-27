@@ -206,3 +206,13 @@ h1,h2,h3,p,li,a,span{overflow-wrap:break-word}
 main.legal .back-home{margin-top:40px;padding-left:0;padding-right:0;border-top:1px solid #d4d1c9;text-align:left}
 main.legal .back-home a{color:var(--text)}
 [dir=rtl] main.legal .back-home{text-align:right}
+/* Botón flotante: siguiente sección */
+.next-section{position:fixed;right:22px;bottom:22px;z-index:40;width:48px;height:48px;display:grid;place-items:center;padding:0;border:1px solid rgba(200,185,138,.7);border-radius:50%;background:rgba(7,16,18,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.28);transition:background .22s ease,border-color .22s ease,opacity .22s ease,transform .22s ease}
+.next-section span{width:10px;height:10px;margin-top:-5px;border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(45deg);transition:transform .25s ease,margin .25s ease}
+.next-section.is-top span{transform:rotate(-135deg);margin-top:5px}
+.next-section:hover,.next-section:focus-visible{background:var(--gold);border-color:var(--gold);transform:translateY(-2px)}
+.next-section:hover span,.next-section:focus-visible span{border-color:var(--ink)}
+.next-section.is-hidden{opacity:0;pointer-events:none}
+[dir=rtl] .next-section{right:auto;left:22px}
+@media(max-width:800px){.next-section{right:16px;bottom:16px;width:44px;height:44px}[dir=rtl] .next-section{left:16px}}
+@media print{.next-section{display:none}}

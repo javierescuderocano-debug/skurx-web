@@ -101,7 +101,7 @@ def translate(page, table, fname):
     body = ''.join(parts)
     head = re.sub(r'<title>(.*?)</title>', lambda m: '<title>%s</title>' % H.escape(table.get(H.unescape(m.group(1)), m.group(1)), quote=False), head)
     page = head + body
-    page = re.sub(r'\b(alt|aria-label|placeholder|content|title)="([^"]*)"', at, page)
+    page = re.sub(r'\b(alt|aria-label|placeholder|content|title|data-next-label|data-top-label)="([^"]*)"', at, page)
     if missing:
         raise SystemExit('Sin traducir en %s:\n  - %s' % (fname, '\n  - '.join(sorted(missing))))
     return page
@@ -160,7 +160,7 @@ def sector_pages(lang, S, UI, CONTROL, pre, close, dialog, head0, sw_for, alt_fo
                 f'<section class="sector-audit" id="auditoria"><p class="eyebrow dark">{UI["control_eyebrow"]}</p><div class="process-control sector-control">'
                 + ''.join('<article><h3>%s</h3><p>%s</p></article>' % c for c in CONTROL) +
                 f'</div><div class="process-audit"><div><p class="eyebrow">{L["first_step"]}</p><h3>{UI["audit_h3"].format(plural=plural)}</h3><p>{s["audit"]} {UI["audit_tail"]}</p></div>{aud_a}{UI["audit_btn"]} <span aria-hidden="true">→</span></a></div></section>\n'
-                f'{close}<div class="back-home"><a href="{home}"><span aria-hidden="true">←</span> {L["back"]}</a></div></main><footer><p>{L["footer"]}<a class="footer-legal" href="{priv_href}"><span class="sep" aria-hidden="true">· </span>{L["privacy"]}</a></p></footer>{dialog}</body></html>')
+                f'{close}<div class="back-home"><a href="{home}"><span aria-hidden="true">←</span> {L["back"]}</a></div></main><footer><p>{L["footer"]}<a class="footer-legal" href="{priv_href}"><span class="sep" aria-hidden="true">· </span>{L["privacy"]}</a></p></footer>{dialog}{nav_snippet(pre, L["next"], L["top"])}</body></html>')
         page = set_alternates(head, alt_for(s)) + body
         open(os.path.join(sector_dir(lang), s['slug'] + '.html'), 'w').write(page)
 
@@ -206,6 +206,17 @@ def set_back(page, href, text, arrow):
     return page.replace('</main>', '<div class="back-home"><a href="%s"><span aria-hidden="true">%s</span> %s</a></div></main>' % (href, arrow, text), 1)
 
 
+def nav_snippet(pre, nxt, top):
+    return ('<button class="next-section" type="button" aria-label="%s" data-next-label="%s" data-top-label="%s"><span aria-hidden="true"></span></button>'
+            '<script src="%snav.js?v=20260927a" defer></script>') % (nxt, nxt, top, pre)
+
+
+def set_nav(page, snippet):
+    page = re.sub(r'<button class="next-section".*?</button><script src="[^"]*nav\.js[^"]*" defer></script>', '', page, flags=re.S)
+    return page.replace('</body>', snippet + '</body>', 1)
+
+
+idx = set_nav(idx, nav_snippet('', 'Siguiente sección', 'Volver arriba'))
 idx = set_back(idx, '#inicio', 'Volver arriba', '↑')
 priv = set_back(priv, 'index.html', 'Volver a la página principal', '←')
 open('index.html', 'w').write(idx)
@@ -222,7 +233,7 @@ dialog_es = idx[idx.index('<dialog'):idx.index('</dialog>') + 9].replace('src="f
 close_es = re.search(r'<section class="contact" id="contacto">.*?</section>', idx, re.S).group(0)
 UI_ES = dict(SECTOR_UI_ES, labels=dict(skip='Saltar al contenido', home_aria='SKURX SYSTEMS, inicio', tagline='CAPACIDAD LIBERADA', nav_aria='Navegación principal',
                                         nav=['Quiénes somos', 'Qué hacemos', 'Cómo lo hacemos', 'Sectores'], talk='Hablemos', first_step='EL PRIMER PASO',
-                                        footer='SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS', privacy='Privacidad', back='Volver a la página principal'))
+                                        footer='SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS', privacy='Privacidad', back='Volver a la página principal', next='Siguiente sección', top='Volver arriba'))
 
 
 def sw_es(s):
@@ -258,7 +269,7 @@ for l in LANGS:
     # rutas relativas desde la subcarpeta
     for a in ['favicon.svg', 'favicon-32.png', 'apple-touch-icon.png', 'hero-bg.webp']:
         p = p.replace('href="%s"' % a, 'href="../%s"' % a)
-    p = p.replace('href="styles.css?', 'href="../styles.css?')
+    p = p.replace('href="styles.css?', 'href="../styles.css?').replace('src="nav.js?', 'src="../nav.js?')
     p = p.replace('srcset="capacity-funnel-mobile.svg"', 'srcset="capacity-funnel-mobile-%s.svg"' % l).replace('src="capacity-funnel.svg"', 'src="capacity-funnel-%s.svg"' % l)
     p = p.replace('href="/privacidad.html"', 'href="%s"' % M.PRIVACY)
     p = re.sub(r'href="sectores/([a-z-]+)\.html"', lambda m: 'href="%s/%s.html"' % (M.SECTORS_DIR, by_es[l][m.group(1)]['slug']), p)
@@ -294,7 +305,7 @@ for l in LANGS:
     Tn = M.COMMON
     UI = dict(M.SECTOR_UI, labels=dict(skip=Tn['Saltar al contenido'], home_aria=Tn['SKURX SYSTEMS, inicio'], tagline=Tn['CAPACIDAD LIBERADA'], nav_aria=Tn['Navegación principal'],
                                        nav=[Tn['Quiénes somos'], Tn['Qué hacemos'], Tn['Cómo lo hacemos'], Tn['Sectores']], talk=Tn['Hablemos'],
-                                       first_step=M.HOME['EL PRIMER PASO'], footer=Tn['SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS'], privacy=Tn['Privacidad'], back=Tn['Volver a la página principal']))
+                                       first_step=M.HOME['EL PRIMER PASO'], footer=Tn['SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS'], privacy=Tn['Privacidad'], back=Tn['Volver a la página principal'], next=Tn['Siguiente sección'], top=Tn['Volver arriba']))
     CONTROL = [(M.HOME[a], M.HOME[b]) for a, b in CONTROL_ES]
 
     def sw_l(s, l=l, M=M):
