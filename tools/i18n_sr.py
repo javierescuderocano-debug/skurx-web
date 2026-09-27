@@ -15,6 +15,7 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=Po%C4%8Detna%20operativna%20revizi
 
 # ---------------------------------------------------------------- Comunes
 COMMON = {
+    'Siguiente sección': 'Sledeći odeljak',
     'Volver a la página principal': 'Nazad na početnu stranu',
     'Volver arriba': 'Nazad na vrh',
     'Saltar al contenido': 'Preskoči na sadržaj',

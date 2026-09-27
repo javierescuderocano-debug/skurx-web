@@ -15,6 +15,7 @@ CONTACT_AUDIT = "mailto:info@skurx.es?subject=Audit%20Operativo%20Iniziale%20-%2
 
 # ---------------------------------------------------------------- Comunes
 COMMON = {
+    'Siguiente sección': 'Sezione successiva',
     'Volver a la página principal': 'Torna alla pagina principale',
     'Volver arriba': 'Torna su',
     'Saltar al contenido': 'Vai al contenuto',
