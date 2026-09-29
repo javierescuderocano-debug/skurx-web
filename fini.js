@@ -244,7 +244,7 @@
     {
       re: /\b(hi|hello|my name is|i need|i want|please|thanks|thank you)\b/i,
       once: 'english',
-      reply: ['Sorry, for now I can only chat in Spanish. You can write to info@skurx.es in English and the team will get back to you.', 'Si lo prefieres, seguimos en español.']
+      reply: ['Sorry, here I can only chat in Spanish. For English, go to skurx.es/en and open the chat there: I’ll help you in English.', 'Si lo prefieres, seguimos en español.']
     },
     {
       re: PRIVACY,
