@@ -216,3 +216,11 @@ main.legal .back-home a{color:var(--text)}
 [dir=rtl] .next-section{right:auto;left:22px}
 @media(max-width:800px){.next-section{right:16px;bottom:16px;width:44px;height:44px}[dir=rtl] .next-section{left:16px}}
 @media print{.next-section{display:none}}
+
+/* Portada: mensaje claro y llamada a la acción (sept. 2026) */
+.hero h1{max-width:640px;font-size:clamp(48px,4.5vw,70px);line-height:.98}
+.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:30px}
+.hero-cta{padding:16px 28px;font-size:15px;font-weight:700}
+.hero-secondary{color:#f5f2ec;font-size:14px;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(200,185,138,.6);padding-bottom:3px}
+.hero-secondary:hover,.hero-secondary:focus-visible{color:var(--gold);border-color:var(--gold)}
+@media (max-width:800px){.hero h1{font-size:42px}.hero-actions{margin-top:24px}}
