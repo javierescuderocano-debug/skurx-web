@@ -65,6 +65,13 @@
     '¿Cómo te llamas? Así sé cómo dirigirme a ti.'
   ];
 
+  // Al abrir Fini desde el botón «Revisión exprés».
+  var REVIEW = 'Revisión exprés gratuita';
+  var REVIEW_LINE = 'Veo que te interesa la Revisión exprés gratuita: 20 minutos en los que el equipo revisa contigo cómo trabajáis y te señala dónde se os escapa tiempo.';
+  function interestFrom(intent) {
+    return intent === 'auditoria' ? AUDIT : intent === 'revision' ? REVIEW : null;
+  }
+
   // Tras conocer el nombre (o si prefiere no darlo).
   var INTRO = [
     'Muchas empresas llegan hasta aquí porque sienten que el día a día se les come el tiempo: tareas que se repiten, información repartida en mil sitios, cosas que se quedan pendientes…',
@@ -286,6 +293,15 @@
       once: 'web',
       re: /(necesito|quiero|busco|hac[eé]is|hacer|me hag[aá]is|renovar) (una |mi |la )?(nueva |otra )?(p[aá]gina )?web( nueva)?\s*[.!?]*$|dise[nñ]o web|p[aá]gina web nueva|(necesito|quiero) una p[aá]gina web/i,
       reply: ['Te cuento: no hacemos páginas web como tal. Lo nuestro es que lo que pasa detrás funcione solo, por ejemplo, que las consultas que llegan por la web se respondan, se registren y no se queden sin seguimiento.', 'Si hay algo de eso que os esté costando tiempo, cuéntamelo y lo vemos.']
+    },
+    {
+      re: /revisi[oó]n (expr[eé]s|gratuita|gratis)|diagn[oó]stico (gratuito|gratis)|(sin coste|gratis|gratuit[oa])[^.]{0,30}(revis|diagn[oó]stic|llamada)/i,
+      reply: function () {
+        if (state.data.interes) return ['Perfecto, lo apunto para el equipo.'];
+        state.data.interes = REVIEW;
+        save();
+        return ['Perfecto. La Revisión exprés es una llamada de 20 minutos, sin coste: nos cuentas cómo trabajáis y te señalamos una o dos cosas concretas donde se os escapa tiempo o clientes.', 'Para prepararla, te hago unas preguntas rápidas.'];
+      }
     },
     {
       re: /auditor[ií]a/i,
@@ -709,7 +725,7 @@
 
   // Reacción al tiempo que se pierde: «varias horas al día» es más de una jornada a la semana.
   function timeAck(text) {
-    if (/no s[eé]|no lo s[eé]|no sabr|ni idea|depende/i.test(text) && !/\d/.test(text)) return 'Sin problema: eso es justo lo que medimos juntos en la auditoría.';
+    if (/no s[eé]|no lo s[eé]|no sabr|ni idea|depende/i.test(text) && !/\d/.test(text)) return 'Sin problema: eso es justo lo que medimos juntos en la ' + (state.data.interes === REVIEW ? 'revisión' : 'auditoría') + '.';
     var m = text.match(/\d+([.,]\d+)?/);
     var n = m ? parseFloat(m[0].replace(',', '.')) : NaN;
     var perDay = /al d[ií]a|diari|cada d[ií]a|todos los d[ií]as|por d[ií]a/i.test(text);
@@ -802,7 +818,7 @@
     var afterName = async function (before) {
       state.step = 'problema';
       save();
-      await say(before.concat(state.data.interes ? ['Para preparar la auditoría, empecemos por lo importante: ¿qué es lo que más tiempo os consume ahora mismo en el día a día?'] : INTRO));
+      await say(before.concat(state.data.interes ? ['Para preparar la ' + (state.data.interes === REVIEW ? 'revisión' : 'auditoría') + ', empecemos por lo importante: ¿qué es lo que más tiempo os consume ahora mismo en el día a día?'] : INTRO));
       setQuick(['¿Cómo trabajáis?']);
     };
     var intro = introduction(text);
@@ -907,7 +923,7 @@
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             access_key: CONFIG.web3formsKey,
-            subject: (d.interes ? 'Solicitud de auditoría: ' : 'Nueva conversación con Fini: ') + d.nombre,
+            subject: (d.interes ? (d.interes === REVIEW ? 'Solicitud de revisión exprés: ' : 'Solicitud de auditoría: ') : 'Nueva conversación con Fini: ') + d.nombre,
             interes: d.interes || '',
             from_name: 'Fini · SKURX SYSTEMS',
             nombre: d.nombre,
@@ -1012,15 +1028,17 @@
     input.focus({ preventScroll: true });
   }
 
-  async function start(audit) {
+  async function start(interest) {
     processing = true;
     state.step = 'saludo';
-    if (audit) {
-      state.data.interes = AUDIT;
+    var audit = interest === AUDIT;
+    if (interest) {
+      state.data.interes = interest;
       save();
     }
     var sec = state.data.sector;
-    if (audit) await say(sec ? [GREETING_AUDIT[0], 'Veo que te interesa la Auditoría Operativa Inicial para ' + sec[2] + '. Te hago unas preguntas rápidas para que el equipo la prepare con tu caso.', GREETING_AUDIT[2]] : GREETING_AUDIT);
+    if (interest === REVIEW) await say([GREETING_AUDIT[0], REVIEW_LINE + ' Te hago unas preguntas rápidas para prepararla.', GREETING_AUDIT[2]]);
+    else if (audit) await say(sec ? [GREETING_AUDIT[0], 'Veo que te interesa la Auditoría Operativa Inicial para ' + sec[2] + '. Te hago unas preguntas rápidas para que el equipo la prepare con tu caso.', GREETING_AUDIT[2]] : GREETING_AUDIT);
     else if (sec) await say([GREETING_AUDIT[0], 'Veo que vienes de la página de ' + sec[2] + '. Te hago unas preguntas rápidas para entender vuestro caso.', GREETING_AUDIT[2]]);
     else await say(GREETING);
     processing = false;
@@ -1085,15 +1103,15 @@
   function open(event) {
     event.preventDefault();
     trigger = event.currentTarget;
-    var audit = trigger && trigger.getAttribute('data-fini-intent') === 'auditoria';
+    var interest = interestFrom(trigger && trigger.getAttribute('data-fini-intent'));
     // Desde una página de sector: «Inmobiliaria|una inmobiliaria|inmobiliarias»
     var sectorAttr = (trigger && trigger.getAttribute('data-fini-sector')) || document.body.getAttribute('data-fini-sector');
     if (sectorAttr && !state.data.sector) {
       state.data.sector = sectorAttr.split('|');
       save();
     }
-    if (audit && state.history.length && !state.data.interes) {
-      state.data.interes = AUDIT;
+    if (interest && state.history.length && !state.data.interes) {
+      state.data.interes = interest;
       save();
     }
     scrollY = window.scrollY;
@@ -1106,7 +1124,7 @@
         else setQuick(state.quick || []);
       } else {
         isReturnVisit();
-        start(audit);
+        start(interest);
       }
     }
     setTimeout(function () { input.focus({ preventScroll: true }); scrollDown(); }, reduceMotion ? 0 : 300);
