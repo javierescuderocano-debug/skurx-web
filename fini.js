@@ -137,8 +137,22 @@
     urgencia: '¿Es algo que os preocupa ya, o lo estáis explorando con calma?',
     nombre: 'Me gustaría que alguien del equipo lo revise contigo personalmente. ¿Cómo te llamas?',
     contacto: '¿Dónde prefieres que te contactemos? Puedes dejarme un email o un teléfono.',
-    horario: '¿Hay algún momento del día en el que te venga mejor que te contactemos?'
+    horario: '¿Hay algún momento del día en el que te venga mejor que te contactemos?',
+    origen: 'Una última cosa: ¿cómo nos has conocido?',
+    origen_quien: '¡Qué bien! ¿Nos dices quién? Así podemos darle las gracias.'
   };
+  var ORIGIN_OPTIONS = ['Me lo recomendó alguien', 'Buscando en Google', 'Redes sociales', 'Me llegó por WhatsApp', 'Otro'];
+
+  // De dónde llega la visita (enlace con ?ref= o utm_source, o la web anterior). Se guarda una vez.
+  function arrival() {
+    try {
+      var q = new URLSearchParams(location.search);
+      var tag = q.get('ref') || q.get('utm_source') || q.get('o');
+      if (tag) return 'Enlace: ' + tag + (q.get('utm_campaign') ? ' / ' + q.get('utm_campaign') : '');
+      if (document.referrer && document.referrer.indexOf(location.host) === -1) return 'Desde: ' + new URL(document.referrer).hostname;
+    } catch (e) {}
+    return 'Directo';
+  }
 
   // ---------- Utilidades ----------
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
@@ -216,7 +230,7 @@
     var q = state.lastQ || QUESTIONS.problema;
     if (state.step === 'saludo') return q;
     q = q.replace(/^.*?(¿)/, '$1').replace(/^¿Y /, '¿');
-    var lead = ['nombre', 'contacto', 'horario'].indexOf(state.step) !== -1 ? 'Como te decía, ' : 'Volviendo a tu caso, ';
+    var lead = ['nombre', 'contacto', 'horario', 'origen', 'origen_quien'].indexOf(state.step) !== -1 ? 'Como te decía, ' : 'Volviendo a tu caso, ';
     return lead + q.charAt(0) + q.charAt(1).toLowerCase() + q.slice(2);
   }
 
@@ -243,6 +257,8 @@
     await say((before || []).concat([question]));
     if (step === 'urgencia') setQuick(['Me urge', 'En los próximos meses', 'Solo estoy explorando']);
     if (step === 'horario') setQuick(['Por la mañana', 'Por la tarde', 'Me da igual']);
+    if (step === 'origen') setQuick(ORIGIN_OPTIONS);
+    if (step === 'origen_quien') setQuick(['Prefiero no decirlo']);
   }
 
   // ---------- Intenciones generales ----------
@@ -667,11 +683,21 @@
         }
         state.data.contacto = [email, phone && phone.replace(/[\s.-]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' · ');
         if (phone) return ask('horario', ['Apuntado.']);
-        return summary(['Apuntado.']);
+        return ask('origen', ['Apuntado.']);
 
       case 'horario':
         state.data.horario = text;
-        return summary(['Perfecto.']);
+        return ask('origen', ['Perfecto.']);
+
+      case 'origen':
+        state.data.origen = /^(no s[eé]|paso|prefiero no|ni idea|no recuerdo|no me acuerdo)/i.test(text.trim()) ? 'No lo indica' : text.trim();
+        save();
+        if (/recomend|amig|conocid|familiar|compa[nñ]er|me lo (dijo|pas[oó]|coment[oó])|me habl[oó]/i.test(text)) return ask('origen_quien');
+        return summary(['Gracias.']);
+
+      case 'origen_quien':
+        if (!/^(prefiero no|no|paso|mejor no)/i.test(text.trim())) state.data.origen += ' (' + text.trim() + ')';
+        return summary(['Gracias.']);
 
       case 'confirmar':
       case 'correccion':
@@ -898,6 +924,7 @@
     list.push(['Nombre', d.nombre || 'Sin indicar']);
     list.push(['Contacto', d.contacto + (d.horario ? ' (' + d.horario.toLowerCase() + ')' : '')]);
     if (d.preferencia) list.push(['Prefiere', d.preferencia]);
+    if (d.origen) list.push(['Nos conoció', d.origen]);
     if (d.dudas) list.push(['Preguntas para el equipo', d.dudas]);
     if (d.notas) list.push(['Añadido', d.notas]);
     save();
@@ -938,6 +965,8 @@
             urgencia: d.urgencia || '',
             notas: d.notas || '',
             dudas: d.dudas || '',
+            origen: d.origen || '',
+            llegada: d.llegada || '',
             conversacion: transcript,
             botcheck: ''
           })
@@ -1103,6 +1132,7 @@
   function open(event) {
     event.preventDefault();
     trigger = event.currentTarget;
+    if (!state.data.llegada) { state.data.llegada = arrival(); save(); }
     var interest = interestFrom(trigger && trigger.getAttribute('data-fini-intent'));
     // Desde una página de sector: «Inmobiliaria|una inmobiliaria|inmobiliarias»
     var sectorAttr = (trigger && trigger.getAttribute('data-fini-sector')) || document.body.getAttribute('data-fini-sector');
