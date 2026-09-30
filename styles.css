@@ -231,3 +231,8 @@ main.legal .back-home a{color:var(--text)}
 .review-offer+.process-audit{margin-top:16px}
 .sector-audit .review-offer{margin-top:40px}
 @media(max-width:800px){.review-offer{flex-direction:column;align-items:flex-start;gap:24px;padding:28px 24px}}
+
+/* Contacto: correo, teléfono y WhatsApp en la misma línea */
+.contact-lines{position:absolute;left:max(44px,calc((100vw - var(--max))/2));bottom:40px;z-index:2;display:flex;flex-wrap:wrap;gap:10px 30px}
+.contact-lines .contact-mail{position:static}
+@media(max-width:800px){.contact-lines{left:22px;right:22px;bottom:28px;gap:10px 22px}}
