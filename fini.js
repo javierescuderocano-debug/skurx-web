@@ -825,7 +825,7 @@
   function noteTools(text) {
     TOOLS.lastIndex = 0;
     if (!state.asked.herramientas && TOOLS.test(text)) {
-      var names = toolNames(text);
+      var names = toolNames(text, true);
       var onlyChannels = names.split(/, | y /).every(function (n) { return /^(el correo|WhatsApp|Instagram|Idealista|Fotocasa|Habitaclia|Milanuncios|Wallapop|Booking|Airbnb|coches\.net)$/.test(n); });
       state.data.herramientas = names;
       if (!onlyChannels) state.asked.herramientas = true;
@@ -1003,16 +1003,23 @@
   }
 
   var TOOL_STOP = /^(usamos|uso|utilizamos|utilizo|tenemos|trabajamos|trabajo|con|y|el|la|los|las|un|una|de|del|para|por|en|todo|nada|ninguna|ninguno|solo|sólo|pues|bueno|también|tambien|algún|alguna|programa|aplicación|aplicacion|herramienta|sistema|móvil|movil|ordenador|papel|libreta|agenda|mano|hoja|hojas|cálculo|calculo|gestión|gestion|facturación|facturacion|correo|mail|email|web|no|sí|si|lo|le|nos|me|mi|mis|su|sus|otro|otra|otros|además|ademas|más|mas|casi|vale|ok|madrid|barcelona|valencia|sevilla|alicante|m[aá]laga|murcia|bilbao|zaragoza|espa[nñ]a|elche|benidorm|hola|gracias|buenas|septiembre|enero|febrero|marzo|abril|mayo|junio|julio|agosto|octubre|noviembre|diciembre|lunes|viernes)$/i;
-  function toolNames(text) {
+  // knownOnly: solo herramientas conocidas. Se usa cuando la herramienta aparece de pasada en otra
+  // respuesta, para no tomar como programa una palabra cualquiera con mayúscula de esa frase.
+  function toolNames(text, knownOnly) {
     TOOLS.lastIndex = 0;
     var found = (text.match(TOOLS) || []).map(function (t) { return t.toLowerCase().replace(/\s+/g, ' '); });
     var names = found.filter(function (t, i) { return found.indexOf(t) === i; }).map(prettyTool);
+    if (knownOnly) { TOOLS.lastIndex = 0; return listJoin(names); }
     // Programas que no conocemos: palabras con mayúscula (Gesden) o una respuesta de una o dos palabras.
+    // La primera palabra de cada frase va con mayúscula por gramática, así que no cuenta como programa.
     var rest = text.replace(TOOLS, ' ');
     TOOLS.lastIndex = 0;
-    var tokens = rest.split(/[\s,.;:()]+/).filter(Boolean);
+    var tokens = [], starts = [];
+    rest.split(/[.!?¡¿\n]+/).forEach(function (sentence) {
+      sentence.split(/[\s,;:()"«»]+/).filter(Boolean).forEach(function (w, j) { tokens.push(w); starts.push(j === 0); });
+    });
     var unknown = tokens.filter(function (w, i) {
-      return /^[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ0-9]{2,}$/.test(w) && !TOOL_STOP.test(w) && !(i === 0 && !names.length && tokens.length > 2);
+      return /^[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ0-9]{2,}$/.test(w) && !TOOL_STOP.test(w) && !(starts[i] && tokens.length > 2);
     });
     if (!names.length && !unknown.length && tokens.length && tokens.length <= 2 && tokens.every(function (w) { return !TOOL_STOP.test(w) && /^[a-záéíóúñ0-9]{3,}$/i.test(w); })) unknown = tokens;
     unknown.forEach(function (w) { var n = prettyTool(w.toLowerCase()); if (names.indexOf(n) === -1 && names.map(function (x) { return x.toLowerCase(); }).indexOf(w.toLowerCase()) === -1) names.push(n); });
