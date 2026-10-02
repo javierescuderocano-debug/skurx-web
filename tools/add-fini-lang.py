@@ -9,7 +9,7 @@ Uso: python3 tools/add-fini-lang.py
 import pathlib, re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-VERSION = '20260929a'
+VERSION = '20260930a'
 
 UI = {
     'en': dict(role='Virtual assistant of SKURX SYSTEMS', close='Close conversation', log='Conversation with Fini',

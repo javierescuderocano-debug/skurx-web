@@ -16,6 +16,8 @@
       greeting: ['Hi, I’m Fini, the virtual assistant of SKURX SYSTEMS. Nice to meet you.', 'What’s your name? That way I know how to address you.'],
       greetingAudit: ['Hi, I’m Fini, the virtual assistant of SKURX SYSTEMS.', 'I see you’re interested in the Initial Operational Audit: in one week we analyse how your company works and give you a clear map of where capacity is being lost. I’ll ask you a few quick questions so the team can prepare it with your case.', 'First of all, what’s your name?'],
       audit: 'Initial Operational Audit',
+      review: 'Free express review',
+      reviewLine: 'I see you’re interested in the free express review: 20 minutes in which the team goes over how you work and points out where you’re losing time. I’ll ask you a few quick questions to prepare it.',
       nice: function (n) { return 'Nice to meet you' + (n ? ', ' + n : '') + '.'; },
       q: {
         problema: 'Tell me, what takes up most of your time right now?',
@@ -56,6 +58,8 @@
       greeting: ['Hola, soc la Fini, l’assistent virtual de SKURX SYSTEMS. És un plaer saludar-te.', 'Com et dius? Així sé com adreçar-me a tu.'],
       greetingAudit: ['Hola, soc la Fini, l’assistent virtual de SKURX SYSTEMS.', 'Veig que t’interessa l’Auditoria Operativa Inicial: en una setmana analitzem com treballa la teva empresa i et lliurem un mapa clar d’on es perd capacitat. Et faig unes preguntes ràpides perquè l’equip la prepari amb el teu cas.', 'Per començar, com et dius?'],
       audit: 'Auditoria Operativa Inicial',
+      review: 'Revisió exprés gratuïta',
+      reviewLine: 'Veig que t’interessa la revisió exprés gratuïta: 20 minuts en què l’equip revisa amb tu com treballeu i t’assenyala on se us escapa el temps. Et faig unes preguntes ràpides per preparar-la.',
       nice: function (n) { return 'Encantada' + (n ? ', ' + n : '') + '.'; },
       q: {
         problema: 'Explica’m, què és el que més temps us consumeix ara mateix?',
@@ -96,6 +100,8 @@
       greeting: ['Bonjour, je suis Fini, l’assistante virtuelle de SKURX SYSTEMS. Ravie de vous saluer.', 'Comment vous appelez-vous ? Ainsi, je saurai comment m’adresser à vous.'],
       greetingAudit: ['Bonjour, je suis Fini, l’assistante virtuelle de SKURX SYSTEMS.', 'Je vois que l’Audit Opérationnel Initial vous intéresse : en une semaine, nous analysons le fonctionnement de votre entreprise et vous remettons une carte claire des endroits où se perd de la capacité. Je vous pose quelques questions rapides pour que l’équipe le prépare avec votre cas.', 'Pour commencer, comment vous appelez-vous ?'],
       audit: 'Audit Opérationnel Initial',
+      review: 'Bilan express gratuit',
+      reviewLine: 'Je vois que le bilan express gratuit vous intéresse : 20 minutes pendant lesquelles l’équipe passe en revue avec vous votre façon de travailler et vous indique où vous perdez du temps. Je vous pose quelques questions rapides pour le préparer.',
       nice: function (n) { return 'Enchantée' + (n ? ', ' + n : '') + '.'; },
       q: {
         problema: 'Dites-moi, qu’est-ce qui vous prend le plus de temps en ce moment ?',
@@ -136,6 +142,8 @@
       greeting: ['Hallo, ich bin Fini, die virtuelle Assistentin von SKURX SYSTEMS. Schön, Sie zu begrüßen.', 'Wie heißen Sie? Dann weiß ich, wie ich Sie ansprechen kann.'],
       greetingAudit: ['Hallo, ich bin Fini, die virtuelle Assistentin von SKURX SYSTEMS.', 'Wie ich sehe, interessieren Sie sich für die Operative Erstanalyse: In einer Woche analysieren wir, wie Ihr Unternehmen arbeitet, und übergeben Ihnen eine klare Übersicht, wo Kapazität verloren geht. Ich stelle Ihnen ein paar kurze Fragen, damit das Team sie mit Ihrem Fall vorbereiten kann.', 'Zunächst: Wie heißen Sie?'],
       audit: 'Operative Erstanalyse',
+      review: 'Kostenloser Express-Check',
+      reviewLine: 'Wie ich sehe, interessieren Sie sich für den kostenlosen Express-Check: 20 Minuten, in denen das Team mit Ihnen durchgeht, wie Sie arbeiten, und Ihnen zeigt, wo Ihnen Zeit verloren geht. Ich stelle Ihnen ein paar kurze Fragen, um ihn vorzubereiten.',
       nice: function (n) { return 'Freut mich' + (n ? ', ' + n : '') + '.'; },
       q: {
         problema: 'Erzählen Sie: Was kostet Sie im Moment die meiste Zeit?',
@@ -176,6 +184,8 @@
       greeting: ['Hallo, ik ben Fini, de virtuele assistent van SKURX SYSTEMS. Leuk je te begroeten.', 'Hoe heet je? Dan weet ik hoe ik je kan aanspreken.'],
       greetingAudit: ['Hallo, ik ben Fini, de virtuele assistent van SKURX SYSTEMS.', 'Ik zie dat je interesse hebt in de Operationele Startaudit: in één week analyseren we hoe je bedrijf werkt en krijg je een duidelijk overzicht van waar capaciteit verloren gaat. Ik stel je een paar korte vragen zodat het team hem met jouw situatie kan voorbereiden.', 'Om te beginnen: hoe heet je?'],
       audit: 'Operationele Startaudit',
+      review: 'Gratis quickscan',
+      reviewLine: 'Ik zie dat je interesse hebt in de gratis quickscan: 20 minuten waarin het team met je bekijkt hoe jullie werken en je laat zien waar tijd weglekt. Ik stel je een paar korte vragen om hem voor te bereiden.',
       nice: function (n) { return 'Aangenaam' + (n ? ', ' + n : '') + '.'; },
       q: {
         problema: 'Vertel eens, wat kost jullie op dit moment de meeste tijd?',
@@ -375,7 +385,7 @@
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             access_key: CONFIG.web3formsKey,
-            subject: tag + (d.interes ? 'Solicitud de auditoría: ' : 'Nueva conversación con Fini: ') + (d.nombre || ''),
+            subject: tag + (d.interes ? (d.interes === L.review ? 'Solicitud de revisión exprés: ' : 'Solicitud de auditoría: ') : 'Nueva conversación con Fini: ') + (d.nombre || ''),
             from_name: 'Fini · SKURX SYSTEMS',
             idioma: LANG.toUpperCase(),
             interes: d.interes || '',
@@ -487,12 +497,17 @@
     input.focus({ preventScroll: true });
   }
 
-  async function start(audit) {
+  // data-fini-intent del botón: «auditoria» o «revision» (Revisión exprés).
+  function interestFrom(intent) {
+    return intent === 'auditoria' ? L.audit : intent === 'revision' ? L.review : null;
+  }
+
+  async function start(interest) {
     processing = true;
     state.step = 'saludo';
-    if (audit) state.data.interes = L.audit;
+    if (interest) state.data.interes = interest;
     save();
-    await say(audit ? L.greetingAudit : L.greeting);
+    await say(interest === L.review ? [L.greetingAudit[0], L.reviewLine, L.greetingAudit[2]] : interest ? L.greetingAudit : L.greeting);
     await drain();
   }
 
@@ -541,8 +556,8 @@
   function open(event) {
     event.preventDefault();
     trigger = event.currentTarget;
-    var audit = trigger && trigger.getAttribute('data-fini-intent') === 'auditoria';
-    if (audit && state.history.length && !state.data.interes) { state.data.interes = L.audit; save(); }
+    var interest = interestFrom(trigger && trigger.getAttribute('data-fini-intent'));
+    if (interest && state.history.length && !state.data.interes) { state.data.interes = interest; save(); }
     scrollY = window.scrollY;
     document.documentElement.classList.add('panel-open');
     panel.showModal();
@@ -553,7 +568,7 @@
         else setQuick(state.quick || []);
       } else {
         isReturnVisit();
-        start(audit);
+        start(interest);
       }
     }
     setTimeout(function () { input.focus({ preventScroll: true }); scrollDown(); }, reduceMotion ? 0 : 300);
