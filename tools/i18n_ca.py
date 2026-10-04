@@ -129,6 +129,16 @@ HOME = {
     'Día antes': 'El dia abans',
     'Recordatorio automático de la prueba o la visita.': 'Recordatori automàtic de la prova o la visita.',
     'MÁS SECTORES': 'MÉS SECTORS',
+    # Portada (PR #74–#76): titular, botones y Revisión exprés
+    'COMPRENDER ANTES DE PROPONER': 'COMPRENDRE ABANS DE PROPOSAR',
+    'Automatizamos lo que le roba tiempo a tu empresa.': 'Automatitzem el que li roba temps a la teva empresa.',
+    'Cuéntanos tu caso': 'Explica’ns el teu cas',
+    'Cómo trabajamos': 'Com treballem',
+    'PARA EMPEZAR · SIN COSTE': 'PER COMENÇAR · SENSE COST',
+    'Revisión exprés · 20 minutos': 'Revisió exprés · 20 minuts',
+    'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.': 'Ens expliques com treballeu i t’assenyalem una o dues fuites concretes de temps o de clients. Sense cost i sense compromís. Si veiem que val la pena anar a fons, et proposem l’auditoria.',
+    'Pedir revisión exprés': 'Demanar revisió exprés',
+    'PARA IR A FONDO': 'PER ANAR A FONS',
 }
 
 # ---------------------------------------------------------------- Privacitat

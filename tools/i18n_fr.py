@@ -129,6 +129,16 @@ HOME = {
     'Día antes': 'La veille',
     'Recordatorio automático de la prueba o la visita.': "Rappel automatique de l'essai ou de la visite.",
     'MÁS SECTORES': 'AUTRES SECTEURS',
+    # Portada (PR #74–#76): titular, botones y Revisión exprés
+    'COMPRENDER ANTES DE PROPONER': 'COMPRENDRE AVANT DE PROPOSER',
+    'Automatizamos lo que le roba tiempo a tu empresa.': 'Nous automatisons ce qui fait perdre du temps à votre entreprise.',
+    'Cuéntanos tu caso': 'Parlez-nous de votre cas',
+    'Cómo trabajamos': 'Notre méthode',
+    'PARA EMPEZAR · SIN COSTE': 'POUR COMMENCER · SANS FRAIS',
+    'Revisión exprés · 20 minutos': 'Bilan express · 20 minutes',
+    'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.': 'Vous nous expliquez comment vous travaillez et nous vous signalons une ou deux fuites concrètes de temps ou de clients. Sans frais et sans engagement. Si nous voyons qu’il vaut la peine d’aller plus loin, nous vous proposons l’audit.',
+    'Pedir revisión exprés': 'Demander un bilan express',
+    'PARA IR A FONDO': 'POUR APPROFONDIR',
 }
 
 # ---------------------------------------------------------------- Privacidad

@@ -15,7 +15,7 @@ Este repositorio es el código fuente de **https://skurx.es**. Se publica autom�
 | `og-image.jpg` | Imagen que se ve al compartir el enlace en redes o WhatsApp |
 | `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png` | Iconos de la pestaña y del móvil |
 | `privacidad.html` | Política de privacidad |
-| `sectores/` | Una página por sector (inmobiliarias, gestorías, automoción…). Los textos de cada una están en su archivo |
+| `sectores/` | Una página por sector (inmobiliarias, gestorías, automoción…). Se generan desde `tools/sectores_data.py` |
 | `404.html` | Página de error |
 | `CNAME` | Conecta el repositorio con el dominio skurx.es (no tocar) |
 | `robots.txt`, `sitemap.xml` | Para Google |
@@ -36,8 +36,9 @@ En `index.html` (y en `privacidad.html` y `404.html` para los estilos) esos arch
 ## Idiomas
 
 - El español es la fuente: `index.html` y `privacidad.html` se editan a mano; el contenido de las 12 páginas de sector está en `tools/sectores_data.py`.
-- Cada idioma adicional tiene sus textos en `tools/i18n_<código>.py` y sus sectores en `tools/sectores_data_<código>.py`, y se publica en su carpeta (`/en/`, `/ca/`, `/fr/`, `/de/`, `/nl/`, `/it/`, `/pt/`, `/uk/`, `/ru/`, `/zh/`, `/ar/`). El árabe se muestra de derecha a izquierda (`RTL = True`).
-- Después de cualquier cambio de textos, ejecuta `python3 tools/build_site.py`. Regenera las páginas de sector, las versiones en otros idiomas, el selector de idioma, las etiquetas `hreflang` y el `sitemap.xml`. Si algún texto en español queda sin traducir, el script se detiene y dice cuál.
-- Para añadir un idioma: copia `i18n_en.py` y `sectores_data_en.py` con el nuevo código, traduce los valores y añade el código a `LANGS` en `tools/build_site.py`.
-- Idiomas visibles (desplegable, buscadores, sitemap): español, inglés, catalán, francés, alemán y neerlandés (`VISIBLE` en `tools/build_site.py`). Italiano, portugués, ucraniano, ruso, chino, árabe, serbio y polaco siguen publicados en su carpeta (p. ej. skurx.es/sr/) pero ocultos: no salen en el desplegable ni en Google. Para mostrar uno, añádelo a `VISIBLE`.
-- Fini de momento solo está en español; en las páginas de otros idiomas, "Hablemos" y "Solicitar auditoría" abren un correo a info@skurx.es.
+- Cada idioma adicional tiene sus textos en `tools/i18n_<código>.py` y sus sectores en `tools/sectores_data_<código>.py`, y se publica en su carpeta (`/en/`, `/ca/`, `/fr/`, `/de/`, `/nl/`).
+- Después de cualquier cambio de textos, ejecuta `python3 tools/build_site.py`. Regenera las páginas de sector, las versiones en otros idiomas (con Fini), el selector de idioma, las etiquetas `hreflang` y el `sitemap.xml`. Si algún texto en español queda sin traducir, el script se detiene sin escribir nada y dice cuál: añádelo a `tools/i18n_<código>.py` de cada idioma.
+- No edites a mano las páginas de otros idiomas ni las de sector: el script las sobrescribe. Si los textos están al día, ejecutarlo no cambia ningún archivo.
+- Para añadir un idioma: copia `i18n_en.py` y `sectores_data_en.py` con el nuevo código, traduce los valores, añade el código a `LANGS` y `VISIBLE` en `tools/build_site.py` y sus textos de Fini en `fini-i18n.js` y `tools/add-fini-lang.py`.
+- Idiomas visibles (desplegable, buscadores, sitemap): español, inglés, catalán, francés, alemán y neerlandés. El serbio (skurx.es/sr/) sigue publicado pero oculto y no se regenera.
+- Fini está en los 6 idiomas: `fini.js` en español y `fini-i18n.js` en los demás. Las conversaciones llegan a info@skurx.es.

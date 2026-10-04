@@ -5,7 +5,9 @@ Uso:  python3 tools/build_site.py
 - Fuente única en español: index.html y privacidad.html (se editan a mano),
   tools/sectores_data.py (contenido de las 12 páginas de sector).
 - Cada idioma: tools/i18n_<código>.py (textos) y tools/sectores_data_<código>.py.
-- El script comprueba que no queda ningún texto sin traducir y falla si lo hay.
+- El script comprueba que no queda ningún texto sin traducir y, si lo hay, se detiene sin escribir nada.
+- Añade Fini a las páginas de otros idiomas (tools/add-fini-lang.py).
+- Con los textos al día, volver a ejecutarlo no cambia ningún archivo.
 """
 import html as H, importlib, os, re, sys
 
@@ -13,9 +15,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 SITE = 'https://skurx.es'
-LANGS = ['en', 'ca', 'fr', 'de', 'nl', 'it', 'pt', 'uk', 'ru', 'zh', 'ar', 'sr', 'pl']   # idiomas generados además del español
+LANGS = ['en', 'ca', 'fr', 'de', 'nl']   # idiomas generados además del español
+# /sr/ (serbio) sigue publicado tal cual, sin regenerar: no está en el desplegable y no se añade a la web (decisión del 02/10/2026).
+# Los demás i18n_<código>.py (it, pt, uk, ru, zh, ar, pl, sr) se conservan por si se recupera algún idioma.
 VISIBLE = ['en', 'ca', 'fr', 'de', 'nl']   # los que aparecen en el desplegable, en hreflang y en el sitemap
-# El resto se publica igualmente en su carpeta (p. ej. /sr/) pero oculto: fuera del desplegable, sin hreflang,
+# Un idioma de LANGS que no esté en VISIBLE se publica en su carpeta pero oculto: fuera del desplegable, sin hreflang,
 # fuera del sitemap y con noindex. Si les falta algún texto nuevo, se usa el inglés en vez de detener la generación.
 
 from sectores_data import S as S_ES
@@ -33,6 +37,10 @@ SECTOR_UI_ES = {
     'ba_before': 'ANTES', 'ba_after': 'DESPUÉS', 'ba_aria': 'Comparar el antes y el después',
     'ba_caption': 'Desliza para comparar. Imagen de ejemplo generada por ordenador.',
 }
+# Revisión exprés (PR #76): rótulo, título, texto y botón; mismo bloque que en la portada
+REVIEW_ES = ['PARA EMPEZAR · SIN COSTE', 'Revisión exprés · 20 minutos',
+             'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.',
+             'Pedir revisión exprés']
 CONTROL_ES = [('Documentado', 'Cada flujo explicado en lenguaje claro.'), ('A nombre de tu empresa', 'Cuentas, herramientas y datos son tuyos.'),
               ('Auditable', 'Puedes ver qué ha hecho cada automatización y cuándo.'), ('Sin dependencia', 'Si dejamos de trabajar juntos, todo sigue siendo tuyo.')]
 
@@ -106,11 +114,19 @@ def translate(page, table, fname):
     page = head + body
     page = re.sub(r'\b(alt|aria-label|placeholder|content|title|data-next-label|data-top-label)="([^"]*)"', at, page)
     if missing:
-        raise SystemExit('Sin traducir en %s:\n  - %s' % (fname, '\n  - '.join(sorted(missing))))
+        MISSING.setdefault(fname, set()).update(missing)
     return page
 
 
-KEEP = {'SKURX', 'SYSTEMS', 'SKURX SYSTEMS', 'info@skurx.es', 'Javier Escudero Cano', 'Web3Forms', 'Microsoft 365', 'GitHub Pages', 'www.aepd.es', 'Fini', 'Auditable'} | set(LANG_NAMES.values())
+MISSING = {}
+OUT = {}   # páginas generadas; se escriben solo si no falta ninguna traducción
+
+
+def out(path, text):
+    OUT[path] = text
+
+
+KEEP = {'SKURX', 'SYSTEMS', 'SKURX SYSTEMS', 'info@skurx.es', 'Javier Escudero Cano', 'Web3Forms', 'Microsoft 365', 'GitHub Pages', 'www.aepd.es', 'Fini', 'Auditable', 'WhatsApp'} | set(LANG_NAMES.values())
 
 
 # ------------------------------------------------------------------ páginas de sector
@@ -162,10 +178,12 @@ def sector_pages(lang, S, UI, CONTROL, pre, close, dialog, head0, sw_for, alt_fo
                 f'{feature}<section class="sector-flowsec"><p class="eyebrow">{UI["flow_eyebrow"]}</p><h2>{UI["flow_h2"]}</h2><p class="note">{UI["flow_note"]}</p><ul class="sector-flow">{flow}</ul></section>\n'
                 f'<section class="sector-audit" id="auditoria"><p class="eyebrow dark">{UI["control_eyebrow"]}</p><div class="process-control sector-control">'
                 + ''.join('<article><h3>%s</h3><p>%s</p></article>' % c for c in CONTROL) +
-                f'</div><div class="process-audit"><div><p class="eyebrow">{L["first_step"]}</p><h3>{UI["audit_h3"].format(plural=plural)}</h3><p>{s["audit"]} {UI["audit_tail"]}</p></div>{aud_a}{UI["audit_btn"]} <span aria-hidden="true">→</span></a></div></section>\n'
+                f'</div><div class="review-offer"><div><p class="eyebrow dark">{L["review"][0]}</p><h3>{L["review"][1]}</h3><p>{L["review"][2]}</p></div>'
+                f'<a class="gold-link" href="#contacto" data-contact-open data-fini-intent="revision" aria-haspopup="dialog" aria-controls="panel-contacto">{L["review"][3]} <span aria-hidden="true">→</span></a></div>'
+                f'<div class="process-audit"><div><p class="eyebrow">{L["first_step"]}</p><h3>{UI["audit_h3"].format(plural=plural)}</h3><p>{s["audit"]} {UI["audit_tail"]}</p></div>{aud_a}{UI["audit_btn"]} <span aria-hidden="true">→</span></a></div></section>\n'
                 f'{close}<div class="back-home"><a href="{home}"><span aria-hidden="true">←</span> {L["back"]}</a></div></main><footer><p>{L["footer"]}<a class="footer-legal" href="{priv_href}"><span class="sep" aria-hidden="true">· </span>{L["privacy"]}</a></p></footer>{dialog}{nav_snippet(pre, L["next"], L["top"])}</body></html>')
         page = set_alternates(head, alt_for(s)) + body
-        open(os.path.join(sector_dir(lang), s['slug'] + '.html'), 'w').write(page)
+        out(os.path.join(sector_dir(lang), s['slug'] + '.html'), page)
 
 
 def sector_dir(lang):
@@ -227,8 +245,8 @@ def set_nav(page, snippet):
 idx = set_nav(idx, nav_snippet('', 'Siguiente sección', 'Volver arriba'))
 idx = set_back(idx, '#inicio', 'Volver arriba', '↑')
 priv = set_back(priv, 'index.html', 'Volver a la página principal', '←')
-open('index.html', 'w').write(idx)
-open('privacidad.html', 'w').write(priv)
+out('index.html', idx)
+out('privacidad.html', priv)
 
 # 2. Páginas de sector en español
 head0 = idx.split('<body>')[0]
@@ -240,7 +258,7 @@ head0 = head0.replace('href="styles.css?', 'href="../styles.css?').replace('src=
 dialog_es = idx[idx.index('<dialog'):idx.index('</dialog>') + 9].replace('src="fini-avatar.svg"', 'src="../fini-avatar.svg"').replace('<a href="/privacidad.html" target="_blank"', '<a href="../privacidad.html" target="_blank"')
 close_es = re.search(r'<section class="contact" id="contacto">.*?</section>', idx, re.S).group(0)
 UI_ES = dict(SECTOR_UI_ES, labels=dict(skip='Saltar al contenido', home_aria='SKURX SYSTEMS, inicio', tagline='CAPACIDAD LIBERADA', nav_aria='Navegación principal',
-                                        nav=['Quiénes somos', 'Qué hacemos', 'Cómo lo hacemos', 'Sectores'], talk='Hablemos', first_step='EL PRIMER PASO',
+                                        nav=['Quiénes somos', 'Qué hacemos', 'Cómo lo hacemos', 'Sectores'], talk='Hablemos', first_step='PARA IR A FONDO', review=REVIEW_ES,
                                         footer='SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS', privacy='Privacidad', back='Volver a la página principal', next='Siguiente sección', top='Volver arriba'))
 
 
@@ -283,14 +301,14 @@ for l in LANGS:
     p = re.sub(r'href="sectores/([a-z-]+)\.html"', lambda m: 'href="%s/%s.html"' % (M.SECTORS_DIR, by_es[l][m.group(1)]['slug']), p)
     p = set_switcher(p, switcher(M.COMMON['Idioma'], '../index.html', [(x, ('index.html' if x == l else '../%s/index.html' % LANG_MOD[x].DIR)) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l))
     p = translate(p, T, 'portada ' + l)
-    open(os.path.join(M.DIR, 'index.html'), 'w').write(p)
+    out(os.path.join(M.DIR, 'index.html'), p)
     home_l = p
 
     # --- ilustración
     for src in ['capacity-funnel.svg', 'capacity-funnel-mobile.svg']:
         svg = open(src).read()
         svg = re.sub(r'(<text[^>]*>)([^<]+)', lambda m: m.group(1) + M.SVG.get(m.group(2).strip(), m.group(2)), svg)
-        open(os.path.join(M.DIR, src.replace('.svg', '-%s.svg' % l)), 'w').write(svg)
+        out(os.path.join(M.DIR, src.replace('.svg', '-%s.svg' % l)), svg)
 
     # --- privacidad
     q = priv.replace('<html lang="es">', '<html lang="%s"%s>' % (l, ' dir="rtl"' if getattr(M, 'RTL', False) else ''))
@@ -302,7 +320,7 @@ for l in LANGS:
     q = q.replace('href="/"', 'href="index.html"').replace('href="index.html" aria-label', 'href="index.html" aria-label')
     q = set_switcher(q, switcher(M.COMMON['Idioma'], '../privacidad.html', [(x, M.PRIVACY if x == l else '../%s/%s' % (LANG_MOD[x].DIR, LANG_MOD[x].PRIVACY)) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l))
     q = translate(q, dict(M.COMMON, **M.PRIVACY_TEXT), 'privacidad ' + l)
-    open(os.path.join(M.DIR, M.PRIVACY), 'w').write(q)
+    out(os.path.join(M.DIR, M.PRIVACY), q)
 
     # --- sectores
     h0 = home_l.split('<body>')[0]
@@ -313,13 +331,30 @@ for l in LANGS:
     Tn = M.COMMON
     UI = dict(M.SECTOR_UI, labels=dict(skip=Tn['Saltar al contenido'], home_aria=Tn['SKURX SYSTEMS, inicio'], tagline=Tn['CAPACIDAD LIBERADA'], nav_aria=Tn['Navegación principal'],
                                        nav=[Tn['Quiénes somos'], Tn['Qué hacemos'], Tn['Cómo lo hacemos'], Tn['Sectores']], talk=Tn['Hablemos'],
-                                       first_step=M.HOME['EL PRIMER PASO'], footer=Tn['SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS'], privacy=Tn['Privacidad'], back=Tn['Volver a la página principal'], next=Tn['Siguiente sección'], top=Tn['Volver arriba']))
+                                       first_step=M.HOME['PARA IR A FONDO'], review=[M.HOME[k] for k in REVIEW_ES], footer=Tn['SKURX SYSTEMS - AUTOMATIZACIÓN DE RECURSOS'], privacy=Tn['Privacidad'], back=Tn['Volver a la página principal'], next=Tn['Siguiente sección'], top=Tn['Volver arriba']))
     CONTROL = [(M.HOME[a], M.HOME[b]) for a, b in CONTROL_ES]
 
     def sw_l(s, l=l, M=M):
         return switcher(M.COMMON['Idioma'], '../../sectores/%s.html' % s['es_slug'], [(x, ('%s.html' % s['slug']) if x == l else '../../%s/%s/%s.html' % (LANG_MOD[x].DIR, LANG_MOD[x].SECTORS_DIR, by_es[x][s['es_slug']]['slug'])) for x in (VISIBLE if l in VISIBLE else VISIBLE + [l])], l)
 
     sector_pages(l, DATA[l], UI, CONTROL, '../../', close_l, '', h0, sw_l, lambda s: sector_urls(s['es_slug']), M.CONTACT_TALK, M.CONTACT_AUDIT, '../' + M.PRIVACY, False)
+
+if MISSING:
+    raise SystemExit('Sin traducir (no se ha escrito ningún archivo):\n' + '\n'.join('%s:\n  - %s' % (f, '\n  - '.join(sorted(m))) for f, m in MISSING.items()))
+for _path, _text in OUT.items():
+    open(_path, 'w').write(_text)
+
+# 3b. Fini en los idiomas generados (tools/add-fini-lang.py): panel de chat y botones que lo abren
+import importlib.util
+_spec = importlib.util.spec_from_file_location('add_fini_lang', os.path.join(ROOT, 'tools', 'add-fini-lang.py'))
+FINI = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(FINI)
+import pathlib
+for l in LANGS:
+    if l in FINI.UI:
+        for f in sorted(pathlib.Path(ROOT, LANG_MOD[l].DIR).rglob('*.html')):
+            if f.name != FINI.UI[l]['privfile']:
+                FINI.patch(f, l)
 
 # 4. idiomas ocultos: noindex y sin alternates
 import glob
@@ -339,6 +374,8 @@ for l in VISIBLE:
     urls += [home_urls[l], priv_urls[l]] + [sector_urls(s['slug'])[l] for s in S_ES]
 import datetime
 today = datetime.date.today().isoformat()
-open('sitemap.xml', 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-                               ''.join('  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (u, today) for u in urls) + '</urlset>\n')
+# La fecha (lastmod) solo cambia cuando cambia la lista de páginas; así una regeneración sin cambios no toca el sitemap.
+if not (os.path.exists('sitemap.xml') and re.findall(r'<loc>([^<]*)</loc>', open('sitemap.xml').read()) == urls):
+    open('sitemap.xml', 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+                                   ''.join('  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (u, today) for u in urls) + '</urlset>\n')
 print('OK: español + %s (visibles) + %s (ocultos) · sitemap con %d URLs' % (', '.join(VISIBLE), ', '.join(l for l in LANGS if l not in VISIBLE), len(urls)))
