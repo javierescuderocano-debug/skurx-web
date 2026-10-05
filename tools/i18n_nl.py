@@ -129,6 +129,16 @@ HOME = {
     'Día antes': 'Dag ervoor',
     'Recordatorio automático de la prueba o la visita.': 'Automatische herinnering aan de proefrit of het bezoek.',
     'MÁS SECTORES': 'MEER SECTOREN',
+    # Portada (PR #74–#76): titular, botones y Revisión exprés
+    'COMPRENDER ANTES DE PROPONER': 'EERST BEGRIJPEN, DAN VOORSTELLEN',
+    'Automatizamos lo que le roba tiempo a tu empresa.': 'Wij automatiseren wat je bedrijf tijd kost.',
+    'Cuéntanos tu caso': 'Vertel ons over je situatie',
+    'Cómo trabajamos': 'Hoe we werken',
+    'PARA EMPEZAR · SIN COSTE': 'OM TE BEGINNEN · KOSTELOOS',
+    'Revisión exprés · 20 minutos': 'Quickscan · 20 minuten',
+    'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.': 'Je vertelt ons hoe jullie werken en wij wijzen je op één of twee concrete plekken waar tijd of klanten weglekken. Kosteloos en vrijblijvend. Zien we dat het de moeite waard is om verder te gaan, dan stellen we de audit voor.',
+    'Pedir revisión exprés': 'Quickscan aanvragen',
+    'PARA IR A FONDO': 'OM DIEPER TE GAAN',
 }
 
 # ---------------------------------------------------------------- Privacidad

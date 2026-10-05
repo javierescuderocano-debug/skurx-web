@@ -129,6 +129,16 @@ HOME = {
     'Día antes': 'Day before',
     'Recordatorio automático de la prueba o la visita.': 'Automatic reminder of the test drive or visit.',
     'MÁS SECTORES': 'MORE SECTORS',
+    # Portada (PR #74–#76): titular, botones y Revisión exprés
+    'COMPRENDER ANTES DE PROPONER': 'UNDERSTAND BEFORE PROPOSING',
+    'Automatizamos lo que le roba tiempo a tu empresa.': 'We automate what’s eating up your company’s time.',
+    'Cuéntanos tu caso': 'Tell us about your case',
+    'Cómo trabajamos': 'How we work',
+    'PARA EMPEZAR · SIN COSTE': 'TO START · FREE OF CHARGE',
+    'Revisión exprés · 20 minutos': 'Express review · 20 minutes',
+    'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.': 'You tell us how you work and we point out one or two specific places where you’re losing time or clients. Free of charge and with no commitment. If we see it’s worth going deeper, we’ll suggest the audit.',
+    'Pedir revisión exprés': 'Request an express review',
+    'PARA IR A FONDO': 'TO GO DEEPER',
 }
 
 # ---------------------------------------------------------------- Privacidad

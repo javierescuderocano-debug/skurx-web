@@ -129,6 +129,16 @@ HOME = {
     'Día antes': 'Am Vortag',
     'Recordatorio automático de la prueba o la visita.': 'Automatische Erinnerung an Probefahrt oder Termin.',
     'MÁS SECTORES': 'WEITERE BRANCHEN',
+    # Portada (PR #74–#76): titular, botones y Revisión exprés
+    'COMPRENDER ANTES DE PROPONER': 'ERST VERSTEHEN, DANN VORSCHLAGEN',
+    'Automatizamos lo que le roba tiempo a tu empresa.': 'Wir automatisieren, was Ihrem Unternehmen Zeit raubt.',
+    'Cuéntanos tu caso': 'Erzählen Sie uns von Ihrem Fall',
+    'Cómo trabajamos': 'So arbeiten wir',
+    'PARA EMPEZAR · SIN COSTE': 'ZUM EINSTIEG · KOSTENLOS',
+    'Revisión exprés · 20 minutos': 'Express-Check · 20 Minuten',
+    'Nos cuentas cómo trabajáis y te señalamos una o dos fugas concretas de tiempo o de clientes. Sin coste y sin compromiso. Si vemos que merece la pena ir a fondo, te proponemos la auditoría.': 'Sie erzählen uns, wie Sie arbeiten, und wir zeigen Ihnen ein oder zwei konkrete Stellen, an denen Ihnen Zeit oder Kunden verloren gehen. Kostenlos und unverbindlich. Wenn es sich lohnt, tiefer zu gehen, schlagen wir Ihnen die Erstanalyse vor.',
+    'Pedir revisión exprés': 'Express-Check anfragen',
+    'PARA IR A FONDO': 'FÜR DEN GENAUEN BLICK',
 }
 
 # ---------------------------------------------------------------- Privacidad
