@@ -55,6 +55,17 @@ p="Someone asking for three quotes ends up comparing figures. If yours shows the
 items=["2D floor plan with the current layout and the proposal.","3D before-and-after render, with materials and finishes.","Everything in a dossier with your company's branding, alongside the quote."],
 ba=True)))
 
+S.append(dict(slug='hospitality',
+es_slug='hosteleria',
+name='Hospitality',
+fini='Hospitality|a hospitality business|hospitality businesses',
+h1="The biggest mess isn't in the kitchen. It's in the reservations book.",
+lead="Bookings come in by phone, by WhatsApp and through the platforms. Tables have to be worked out, orders depend on what's left in the walk-in, shifts change every week and invoices need sorting before they go to the accountant.",
+cta="Let's talk about your venue",
+h2="What takes up most of<br>a hospitality business's time.",
+pains=[('Bookings and table planning', "Bookings arrive through several channels, get written down by hand, tables are worked out in someone's head and gaps go unused.", 'Every booking in one book, connected to the POS and booking platform you already use, with confirmation and a reminder for the guest, and a table plan based on capacity and the average length of each service, so tables can be turned in an orderly way when possible.', 'Applied AI'), ('Costing, stock and orders', "Knowing what each dish costs and what's left in the walk-in means counting and calculating by hand, and orders go out late or too large.", "Each dish sold deducts its ingredients from stock according to its costing, and when an item drops below the minimum, the supplier order is ready for you to approve. From the same costing, each dish's allergen sheet updates itself whenever a recipe changes.", 'Tool integration'), ('Shifts and schedule', 'Sorting out shifts, swaps and sick days over WhatsApp is a headache, especially in high season.', 'The weekly shift schedule in one place, with the team notified of every change and reminders for supplier appointments, inspections and payments.', 'Automation'), ('Clear figures and invoices for the accountant', 'Before anything goes to the accountant, invoices need sorting and the till needs balancing, and the business figures arrive late.', "Supplier invoices are collected and filed automatically, and the till, cost per dish and the day's margin arrive in one clear summary.", 'Tool integration')],
+flow=[('10:00', "Today's set menu goes out on WhatsApp and social media."), ('12:00', 'The lunchtime reservations book is already laid out by table, with reminders sent.'), ('16:30', "Stock has been updated with what was sold, and tomorrow's order is waiting for your approval."), ('17:00', "Today's invoices are filed in the accountant's folder."), ('00:30', "The summary of the day's till and margin arrives."), ('Next day', "Last night's guests receive an invitation to leave a review, and new reviews have a reply ready for approval.")],
+audit='In one week we review how bookings reach you and are organized, how stock and orders are controlled, and how much manual work sits between closing the till and the accountant.'))
 S.append(dict(slug="property-managers",es_slug="administradores-fincas",name="Property managers",fini="Property management|a property management firm (residential communities)|property managers",
 h1="Every building, a phone that never stops.",
 lead="Breakdowns, residents' questions, meetings, special levies and fees. Much of the day goes on answering, forwarding and reminding, and very little on managing.",
