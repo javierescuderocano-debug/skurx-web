@@ -55,6 +55,17 @@ p="Qui demana tres pressupostos acaba comparant xifres. Si amb el vostre veu com
 items=["Plànol en 2D amb la distribució actual i la proposta.","Render 3D de l'abans i el després, amb materials i acabats.","Tot en un dossier amb la imatge de la vostra empresa, al costat del pressupost."],
 ba=True)))
 
+S.append(dict(slug='hostaleria',
+es_slug='hosteleria',
+name='Hostaleria',
+fini="Hostaleria|un negoci d'hostaleria|negocis d'hostaleria",
+h1='El gran embolic no és a la cuina. És al llibre de reserves.',
+lead="Reserves que arriben per telèfon, per WhatsApp i per les plataformes. Taules que cal quadrar, comandes que depenen del que queda a la cambra, torns que canvien cada setmana i factures que cal ordenar abans d'enviar-les a la gestoria.",
+cta='Parlem del teu local',
+h2="El que més temps<br>li pren a un negoci d'hostaleria.",
+pains=[('Reserves i organització de taules', "Reserves per diversos canals, apuntades a mà, taules que es quadren de memòria i forats que no s'aprofiten.", "Totes les reserves en un sol llibre, connectat al TPV i a la plataforma de reserves que ja feu servir, amb confirmació i recordatori al client i una proposta de taules segons l'aforament i el temps mitjà de cada servei, per poder doblar taules amb ordre quan sigui possible.", 'IA aplicada'), ('Escandalls, estoc i comandes', 'Saber què costa cada plat i què queda a la cambra obliga a comptar i calcular a mà, i les comandes surten tard o de més.', "Cada plat que surt descompta els seus ingredients de l'estoc segons el seu escandall i, quan baixa del mínim, la comanda al proveïdor queda preparada perquè l'aprovis. Amb el mateix escandall, la fitxa d'al·lèrgens de cada plat s'actualitza sola quan canvia una recepta.", "Connexió d'eines"), ('Torns i agenda', 'Quadrar torns, canvis i baixes per WhatsApp és un maldecap, sobretot en temporada.', "El quadrant setmanal en un sol lloc, amb avís a l'equip de cada canvi i recordatoris de cites amb proveïdors, revisions i pagaments.", 'Automatització'), ('Números clars i factures per a la gestoria', "Abans d'enviar res a la gestoria cal ordenar factures i quadrar la caixa, i els números del negoci arriben tard.", "Les factures de proveïdors es recullen i s'ordenen soles, i la caixa, el cost per plat i el marge del dia arriben en un resum clar.", "Connexió d'eines")],
+flow=[('10:00', 'El menú del dia surt per WhatsApp i a les xarxes.'), ('12:00', 'El llibre de reserves del migdia ja està quadrat per taules, amb els recordatoris enviats.'), ('16:30', "L'estoc s'ha descomptat amb el que s'ha venut i la comanda de demà espera la teva aprovació."), ('17:00', 'Les factures del dia queden ordenades a la carpeta de la gestoria.'), ('00:30', 'Arriba el resum de la caixa i del marge del dia.'), ("L'endemà", "Els clients d'ahir a la nit reben la invitació a deixar la seva ressenya, i les ressenyes noves tenen una resposta preparada per aprovar.")],
+audit="En una setmana revisem com us arriben i s'organitzen les reserves, com es controlen l'estoc i les comandes, i quanta feina manual hi ha entre el tancament de caixa i la gestoria."))
 S.append(dict(slug="administradors-finques",es_slug="administradores-fincas",name="Administradors de finques",fini="Administració de finques|una administració de finques|administradors de finques",
 h1="Cada comunitat, un telèfon que no para.",
 lead="Avaries, consultes de veïns, juntes, derrames i quotes. Bona part del dia se'n va a atendre, reenviar i recordar, i molt poca a gestionar.",
