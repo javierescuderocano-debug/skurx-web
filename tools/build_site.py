@@ -126,7 +126,7 @@ def out(path, text):
     OUT[path] = text
 
 
-KEEP = {'SKURX', 'SYSTEMS', 'SKURX SYSTEMS', 'info@skurx.es', 'Javier Escudero Cano', 'Web3Forms', 'Microsoft 365', 'GitHub Pages', 'www.aepd.es', 'Fini', 'Auditable', 'WhatsApp'} | set(LANG_NAMES.values())
+KEEP = {'SKURX', 'SYSTEMS', 'SKURX SYSTEMS', 'info@skurx.es', 'Javier Escudero Cano', 'Web3Forms', 'Microsoft 365', 'GitHub Pages', 'GoatCounter', 'www.aepd.es', 'Fini', 'Auditable', 'WhatsApp'} | set(LANG_NAMES.values())
 
 
 # ------------------------------------------------------------------ páginas de sector

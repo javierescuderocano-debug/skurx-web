@@ -177,6 +177,8 @@ PRIVACY_TEXT = {
         "Pour faire fonctionner le site et l'assistant, nous nous appuyons sur des prestataires qui ne traitent les données que pour nous fournir leur service :",
     ': envía a nuestro correo la conversación que confirmas en Fini.': ' : envoie à notre boîte mail la conversation que vous confirmez dans Fini.',
     ': aloja el correo info@skurx.es.': ' : héberge la boîte mail info@skurx.es.',
+    ': cuenta las visitas de forma anónima y sin cookies, para saber cuántas personas entran en la web y qué páginas ven.':
+        ": compte les visites de façon anonyme et sans cookies, pour savoir combien de personnes viennent sur le site et quelles pages elles consultent.",
     ': aloja la web y puede registrar datos técnicos de conexión, como la dirección IP, por motivos de seguridad.':
         ' : héberge le site et peut enregistrer des données techniques de connexion, comme l\'adresse IP, pour des raisons de sécurité.',
     'Algunos de estos proveedores pueden tratar datos fuera del Espacio Económico Europeo. En ese caso, la transferencia debe ampararse en las garantías que prevé el Reglamento General de Protección de Datos.':
